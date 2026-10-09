@@ -1,0 +1,11 @@
+{
+  "name": "expressvpn-checker",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "node-forge": "^1.3.1"
+  }
+}
