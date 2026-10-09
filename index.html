@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExpressVPN Checker</title>
+  <style>
+    /* Use the same style as SMMLite – dark theme */
+    * { box-sizing: border-box; }
+    body {
+      background: linear-gradient(145deg, #0a0f1e 0%, #0c1222 100%);
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0; padding: 24px 16px; color: #eef2ff;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    .card {
+      background: rgba(18, 25, 45, 0.75);
+      border-radius: 2rem;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 1.5rem; margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, #c084fc, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin: 0;
+    }
+    textarea {
+      width: 100%; background: #0f172ad9;
+      border: 1px solid #2d3a5e; border-radius: 1.25rem;
+      padding: 1rem; color: #e2e8f0;
+      font-family: monospace; font-size: 0.85rem;
+    }
+    button {
+      background: linear-gradient(95deg, #3b82f6, #2563eb);
+      border: none; font-weight: 600;
+      padding: 0.7rem 1.4rem; border-radius: 3rem;
+      color: white; cursor: pointer; margin-right: 10px;
+    }
+    button.secondary { background: #334155; }
+    .stats {
+      display: flex; flex-wrap: wrap; gap: 18px;
+      background: #0f172a80; border-radius: 1.5rem;
+      padding: 1rem; margin: 1rem 0;
+    }
+    .stat-card {
+      background: #111827; padding: 6px 16px;
+      border-radius: 40px; border-left: 3px solid #38bdf8;
+    }
+    .stat-card.hit { border-left-color: #4ade80; }
+    .stat-card.bad { border-left-color: #f87171; }
+    .result-item {
+      background: #0f172a; border-radius: 1rem;
+      padding: 1rem; margin-bottom: 0.75rem;
+      border-left: 4px solid;
+    }
+    .result-item.hit { border-left-color: #4ade80; background: #0f2a1f40; }
+    .result-item.fail { border-left-color: #f87171; opacity: 0.8; }
+    .combo-text { font-family: monospace; font-size: 1rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>🔒 ExpressVPN · Account Checker By SAKIB</h1>
+    <p style="color:#9ca3af;">⚡ Config by <a href="https://t.me/shakib2016" target="_blank" style="color:#38bdf8;">@shakib2016</a> | HIT = Valid Subscription</p>
+  </div>
+
+  <div class="card">
+    <label>📋 COMBOS (email:password) — one per line</label>
+    <textarea id="comboList" rows="6" placeholder="user@example.com:password"></textarea>
+    <div style="margin: 20px 0 12px;">
+      <button id="startBtn">🚀 START</button>
+      <button id="stopBtn" class="secondary" disabled>⏹️ STOP</button>
+      <button id="clearCombosBtn" class="secondary">🗑️ Clear</button>
+      <button id="exportTxtBtn" class="secondary">📄 Export</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">📊 Total: <span id="totalCount">0</span></div>
+      <div class="stat-card">✅ Checked: <span id="checkedCount">0</span></div>
+      <div class="stat-card hit">🔥 HITS: <span id="hitCount" style="color:#4ade80;">0</span></div>
+      <div class="stat-card bad">❌ FAIL: <span id="failCount">0</span></div>
+    </div>
+    <p id="statusMsg" style="font-size:0.75rem;">⚡ Ready</p>
+  </div>
+
+  <div class="card">
+    <div class="results-scroll" id="resultsContainer">
+      <div class="no-results">✨ No results yet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const comboInput = document.getElementById('comboList');
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const clearCombosBtn = document.getElementById('clearCombosBtn');
+  const exportTxtBtn = document.getElementById('exportTxtBtn');
+  const totalSpan = document.getElementById('totalCount');
+  const checkedSpan = document.getElementById('checkedCount');
+  const hitSpan = document.getElementById('hitCount');
+  const failSpan = document.getElementById('failCount');
+  const statusMsg = document.getElementById('statusMsg');
+  const resultsContainer = document.getElementById('resultsContainer');
+
+  let active = false, combos = [], currentIdx = 0;
+  let checked = 0, hits = 0, fails = 0;
+  let allResults = [];
+
+  function updateStats() {
+    totalSpan.innerText = combos.length;
+    checkedSpan.innerText = checked;
+    hitSpan.innerText = hits;
+    failSpan.innerText = fails;
+  }
+
+  function renderResults() {
+    if (!allResults.length) {
+      resultsContainer.innerHTML = '<div class="no-results">✨ No results yet.</div>';
+      return;
+    }
+    let html = '';
+    for (const r of allResults) {
+      const rowClass = r.hit ? 'hit' : 'fail';
+      const status = r.hit ? '🔥 HIT' : '❌ FAIL';
+      html += `
+        <div class="result-item ${rowClass}">
+          <div class="combo-text">${r.username}:${r.password}</div>
+          <div style="font-size:0.75rem; color:#cbd5e1; margin-top:5px;">
+            ${status} | ${r.message || ''}
+          </div>
+          ${r.plan ? `<div style="font-size:0.7rem;">Plan: ${r.plan} | Expiry: ${r.expiry}</div>` : ''}
+        </div>
+      `;
+    }
+    resultsContainer.innerHTML = html;
+  }
+
+  async function checkOne(username, password) {
+    try {
+      const res = await fetch('/api/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      return await res.json();
+    } catch(e) {
+      return { valid: false, hit: false, message: e.message };
+    }
+  }
+
+  async function runner() {
+    if (!active) return;
+    if (currentIdx >= combos.length) {
+      active = false;
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      statusMsg.innerText = '✅ All done.';
+      return;
+    }
+    const { username, password } = combos[currentIdx];
+    statusMsg.innerText = `🔍 (${currentIdx+1}/${combos.length}) ${username}`;
+    const result = await checkOne(username, password);
+    checked++;
+    if (result.hit) hits++;
+    else fails++;
+    allResults.push({ username, password, ...result });
+    updateStats();
+    renderResults();
+    currentIdx++;
+    if (active && currentIdx < combos.length) setTimeout(runner, 500);
+    else {
+      active = false;
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      statusMsg.innerText = '✅ Completed.';
+    }
+  }
+
+  startBtn.onclick = () => {
+    const lines = comboInput.value.split(/\r?\n/);
+    combos = lines.filter(l => l.trim() && l.includes(':')).map(l => {
+      const [u, ...p] = l.trim().split(':');
+      return { username: u.trim(), password: p.join(':').trim() };
+    });
+    if (!combos.length) { statusMsg.innerText = '❌ No valid combos'; return; }
+    currentIdx = 0; checked = 0; hits = 0; fails = 0; allResults = [];
+    updateStats(); renderResults();
+    active = true; startBtn.disabled = true; stopBtn.disabled = false;
+    statusMsg.innerText = `🚀 Checking ${combos.length} accounts...`;
+    runner();
+  };
+
+  stopBtn.onclick = () => {
+    active = false; startBtn.disabled = false; stopBtn.disabled = true;
+    statusMsg.innerText = '⏸️ Stopped.';
+  };
+
+  clearCombosBtn.onclick = () => { comboInput.value = ''; };
+  exportTxtBtn.onclick = () => {
+    const hitsList = allResults.filter(r => r.hit);
+    if (!hitsList.length) { alert('No hits to export.'); return; }
+    let text = '';
+    hitsList.forEach(r => { text += `${r.username}:${r.password} | ${r.plan || '—'} | ${r.expiry || '—'}\n`; });
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'expressvpn_hits.txt';
+    a.click();
+  };
+
+  updateStats();
+  renderResults();
+</script>
+</body>
+</html>
