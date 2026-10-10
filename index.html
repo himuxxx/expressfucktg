@@ -380,6 +380,50 @@
     margin-bottom: 6px;
   }
 
+  /* ===== PROXY ===== */
+  .proxy-form {
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .proxy-form h3 {
+    font-size: 0.82rem; font-weight: 700; color: #cbd5e1;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .proxy-form textarea {
+    width: 100%; min-height: 90px; max-height: 180px;
+    font-family: monospace; font-size: 0.76rem;
+  }
+  .proxy-list { display: flex; flex-direction: column; gap: 6px; }
+  .proxy-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; padding: 10px 12px; border-radius: 10px;
+    background: rgba(2, 6, 23, 0.5); border: 1px solid #1e293b;
+    border-left: 3px solid #334155; font-size: 0.72rem;
+  }
+  .proxy-row.live { border-left-color: #4ade80; }
+  .proxy-row.dead { border-left-color: #ef4444; opacity: 0.75; }
+  .proxy-row.unknown { border-left-color: #64748b; }
+  .proxy-row .p-info { flex: 1; min-width: 0; }
+  .proxy-row .p-url {
+    font-family: monospace; color: #cbd5e1;
+    font-size: 0.7rem; word-break: break-all;
+  }
+  .proxy-row .p-meta {
+    font-size: 0.62rem; color: #64748b;
+    margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .proxy-row .p-status {
+    font-size: 0.6rem; font-weight: 800; padding: 2px 8px;
+    border-radius: 20px; flex-shrink: 0;
+  }
+  .proxy-row .p-status.live { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+  .proxy-row .p-status.dead { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+  .proxy-row .p-status.unknown { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+  .proxy-row .p-actions { display: flex; gap: 5px; flex-shrink: 0; }
+
   /* ===== ANALYTICS ===== */
   .analytics-live { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 
@@ -739,6 +783,31 @@
                 </div>
               </div>
 
+              <!-- ===== PROXY SECTION ===== -->
+              <div class="proxy-form">
+                <h3>🌐 Proxy Management (Auto-Rotation)</h3>
+                <div>
+                  <label style="font-size:0.66rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; letter-spacing:0.4px; display:block; margin-bottom:4px;">
+                    Add Proxies (one per line — http://user:pass@ip:port)
+                  </label>
+                  <textarea id="proxyInput" placeholder="http://user:pass@1.2.3.4:8080&#10;http://5.6.7.8:3128&#10;socks5://9.10.11.12:1080"></textarea>
+                </div>
+                <div class="action-row" style="margin-top:10px;">
+                  <button class="btn primary" id="addProxyBtn"><span>➕</span><span>Add Proxies</span></button>
+                  <button class="btn ghost" id="checkAllProxyBtn"><span>⚡</span><span>Test All</span></button>
+                </div>
+                <div class="gen-result" id="proxyResult" style="display:none;">
+                  <div class="gen-label">🌐 Proxy Check Results</div>
+                  <div id="proxyCheckList" style="max-height:200px; overflow-y:auto; margin-top:6px;"></div>
+                </div>
+              </div>
+
+              <div class="section-title" style="margin-top:18px;"><span class="dot"></span><span>🌐 Proxies</span></div>
+              <div class="proxy-list" id="proxyList">
+                <div class="empty"><span class="emo">🌐</span><div class="title">No proxies added</div></div>
+              </div>
+
+              <!-- User List -->
               <div class="section-title" style="margin-top:18px;"><span class="dot"></span><span>Users</span></div>
               <div class="user-list" id="userList">
                 <div class="empty"><span class="emo">📭</span><div class="title">No users</div></div>
@@ -746,7 +815,7 @@
             </div>
           </section>
 
-          <!-- ===== Analytics Panel ===== -->
+          <!-- Analytics Panel -->
           <section class="panel" id="panel-analytics">
             <div class="panel-scroll">
 
@@ -917,7 +986,7 @@ function switchTab(tabName) {
   if (panel) panel.classList.add('active');
   const s = panel?.querySelector('.panel-scroll');
   if (s) s.scrollTop = 0;
-  if (tabName === 'admin') loadUsers();
+  if (tabName === 'admin') { loadUsers(); loadProxies(); }
   if (tabName === 'analytics') loadAnalytics();
 }
 document.querySelectorAll('.nav-item, .side-nav-item').forEach(tab => {
@@ -1113,7 +1182,7 @@ function dl(text, name) {
 }
 
 // ============================================================
-//  ADMIN PANEL
+//  ADMIN PANEL - Users
 // ============================================================
 let lastGenerated = [];
 
@@ -1285,6 +1354,142 @@ document.getElementById('downloadGenBtn').addEventListener('click', () => {
   const text = lastGenerated.map(u => `${u.username}:${u.password}`).join('\n');
   dl(text, `expressvpn_accounts_${Date.now()}.txt`);
   showToast('📥 Downloaded ' + lastGenerated.length + ' accounts');
+});
+
+// ============================================================
+//  PROXY MANAGEMENT
+// ============================================================
+async function loadProxies() {
+  const list = document.getElementById('proxyList');
+  if (!list) return;
+  try {
+    const res = await fetch('/api/admin?action=proxy-list', { headers: authHeader() });
+    if (!res.ok) { list.innerHTML = '<div class="empty">Access denied</div>'; return; }
+    const data = await res.json();
+    const proxies = data.proxies || [];
+
+    if (!proxies.length) {
+      list.innerHTML = '<div class="empty"><span class="emo">🌐</span><div class="title">No proxies added</div><div class="sub">Add proxies above to enable auto-rotation</div></div>';
+      return;
+    }
+
+    list.innerHTML = proxies.map(p => {
+      const statusCls = p.status || 'unknown';
+      const statusText = p.status === 'live' ? '🟢 LIVE' : p.status === 'dead' ? '🔴 DEAD' : '⚪ UNKNOWN';
+      const latency = p.latency ? `${p.latency}ms` : '—';
+      const ipText = p.proxyIp ? `IP: ${p.proxyIp}` : '';
+      const lastChecked = p.lastChecked ? new Date(p.lastChecked).toLocaleTimeString() : 'Never';
+      return `
+        <div class="proxy-row ${statusCls}">
+          <div class="p-info">
+            <div class="p-url">${esc(p.url)}</div>
+            <div class="p-meta">
+              ${ipText ? `<span>${ipText}</span>` : ''}
+              <span>⚡ ${latency}</span>
+              <span>🕐 ${lastChecked}</span>
+            </div>
+          </div>
+          <span class="p-status ${statusCls}">${statusText}</span>
+          <div class="p-actions">
+            <button class="btn ghost small proxy-test-btn" data-id="${p.id}">🔄</button>
+            <button class="btn danger small proxy-del-btn" data-id="${p.id}">🗑️</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    list.querySelectorAll('.proxy-test-btn').forEach(b => {
+      b.addEventListener('click', async () => {
+        b.disabled = true;
+        b.textContent = '⏳';
+        try {
+          const r = await fetch('/api/admin?action=proxy-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeader() },
+            body: JSON.stringify({ id: b.dataset.id })
+          });
+          const d = await r.json();
+          showToast(d.result?.ok ? '🟢 Live! ' + d.result.latency + 'ms' : '🔴 Dead: ' + (d.result?.message || ''));
+          loadProxies();
+        } catch (e) {
+          showToast('❌ ' + e.message);
+        }
+      });
+    });
+
+    list.querySelectorAll('.proxy-del-btn').forEach(b => {
+      b.addEventListener('click', async () => {
+        if (!confirm('Delete this proxy?')) return;
+        const r = await fetch('/api/admin?action=proxy-delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...authHeader() },
+          body: JSON.stringify({ id: b.dataset.id })
+        });
+        const d = await r.json();
+        showToast(d.ok ? '🗑️ Deleted' : '❌ Failed');
+        loadProxies();
+      });
+    });
+  } catch (e) {
+    list.innerHTML = '<div class="empty">Error: ' + esc(e.message) + '</div>';
+  }
+}
+
+document.getElementById('addProxyBtn').addEventListener('click', async () => {
+  const input = document.getElementById('proxyInput').value.trim();
+  if (!input) return showToast('❌ No proxy URLs');
+  const lines = input.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+
+  let added = 0, failed = 0;
+  for (const url of lines) {
+    try {
+      const r = await fetch('/api/admin?action=proxy-add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ url })
+      });
+      const d = await r.json();
+      if (d.ok) added++; else failed++;
+    } catch (e) { failed++; }
+  }
+  showToast(`✅ Added ${added}, ❌ Failed ${failed}`);
+  document.getElementById('proxyInput').value = '';
+  loadProxies();
+});
+
+document.getElementById('checkAllProxyBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('checkAllProxyBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>Testing...</span>';
+
+  try {
+    const r = await fetch('/api/admin?action=proxy-check-all', {
+      method: 'POST',
+      headers: authHeader()
+    });
+    const d = await r.json();
+
+    const box = document.getElementById('proxyResult');
+    const list = document.getElementById('proxyCheckList');
+    box.style.display = 'block';
+    list.innerHTML = d.results.map(r => `
+      <div style="display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px solid rgba(56,189,248,0.08); font-size:0.72rem;">
+        <span style="font-family:monospace; color:#cbd5e1; flex:1; word-break:break-all;">${esc(r.url)}</span>
+        <span style="color:${r.ok ? '#4ade80' : '#f87171'}; font-weight:700; flex-shrink:0;">${r.ok ? '🟢 ' + r.latency + 'ms' : '🔴 ' + (r.message || 'Dead')}</span>
+      </div>
+    `).join('') + `
+      <div style="margin-top:8px; text-align:right; font-size:0.7rem; color:#94a3b8;">
+        🟢 Live: <b style="color:#4ade80;">${d.live}</b> | 🔴 Dead: <b style="color:#f87171;">${d.dead}</b>
+      </div>
+    `;
+
+    showToast(`✅ ${d.live} live, ${d.dead} dead`);
+    loadProxies();
+  } catch (e) {
+    showToast('❌ ' + e.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = orig;
 });
 
 // ============================================================
