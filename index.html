@@ -12,413 +12,458 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
     color: #eef2ff;
     min-height: 100vh;
-    -webkit-tap-highlight-color: transparent;
   }
   .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }
-
-  /* ===== Header ===== */
   header {
-    text-align: center;
-    padding: 20px 12px;
-    background: rgba(18, 25, 45, 0.75);
+    text-align: center; padding: 20px 12px;
+    background: rgba(18,25,45,0.75);
     border-radius: 20px;
-    border: 1px solid rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56,189,248,0.18);
     margin-bottom: 14px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   }
   header h1 {
     font-size: 1.5rem;
     background: linear-gradient(135deg, #c084fc, #38bdf8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
     font-weight: 800;
-    letter-spacing: -0.5px;
   }
-  header p {
-    margin-top: 6px;
-    font-size: 0.78rem;
-    color: #9ca3af;
-  }
-  header p a { color: #38bdf8; text-decoration: none; font-weight: 600; }
+  header p { margin-top: 6px; font-size: 0.78rem; color: #9ca3af; }
+  header p a { color: #38bdf8; text-decoration: none; }
 
-  /* ===== Tabs ===== */
-  .tabs {
-    display: flex;
-    gap: 6px;
-    background: rgba(18, 25, 45, 0.75);
-    padding: 6px;
-    border-radius: 16px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    margin-bottom: 14px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    flex: 1;
-    min-width: 90px;
-    text-align: center;
-    padding: 10px 8px;
-    border-radius: 12px;
-    background: transparent;
-    color: #cbd5e1;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .tab.active {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    color: white;
-    box-shadow: 0 4px 14px rgba(59,130,246,0.4);
-  }
-  .tab .badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.22);
-    padding: 1px 7px;
+  /* Login box */
+  .login-box {
+    max-width: 420px; margin: 40px auto;
+    background: rgba(18,25,45,0.85);
+    padding: 28px 22px;
     border-radius: 20px;
-    font-size: 0.7rem;
-    margin-left: 4px;
+    border: 1px solid rgba(56,189,248,0.2);
+    box-shadow: 0 10px 32px rgba(0,0,0,0.35);
+  }
+  .login-box h2 { text-align: center; margin-bottom: 20px; font-size: 1.2rem; }
+  .field { margin-bottom: 14px; }
+  .field label { font-size: 0.8rem; color: #cbd5e1; display: block; margin-bottom: 5px; }
+  .field input {
+    width: 100%;
+    background: rgba(15,23,42,0.9);
+    border: 1px solid #2d3a5e;
+    border-radius: 10px;
+    padding: 11px 12px;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+  }
+  .field input:focus { outline: none; border-color: #3b82f6; }
+  .btn-main {
+    width: 100%; padding: 12px;
+    background: linear-gradient(95deg, #3b82f6, #8b5cf6);
+    border: none; border-radius: 12px;
+    color: white; font-weight: 700;
+    font-size: 0.9rem; cursor: pointer;
+    margin-top: 6px;
+  }
+  .link-row {
+    text-align: center; margin-top: 14px;
+    font-size: 0.8rem; color: #94a3b8;
+  }
+  .link-row a { color: #38bdf8; cursor: pointer; text-decoration: none; font-weight: 600; }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 6px;
+    background: rgba(18,25,45,0.75);
+    padding: 6px; border-radius: 16px;
+    border: 1px solid rgba(56,189,248,0.15);
+    margin-bottom: 14px; overflow-x: auto;
+  }
+  .tab {
+    flex: 1; min-width: 88px; text-align: center;
+    padding: 10px 8px; border-radius: 12px;
+    background: transparent; color: #cbd5e1;
+    font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; border: none; white-space: nowrap;
+  }
+  .tab.active { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; }
+  .tab .badge {
+    display: inline-block; background: rgba(255,255,255,0.22);
+    padding: 1px 7px; border-radius: 20px;
+    font-size: 0.68rem; margin-left: 4px;
   }
 
-  /* ===== Panels ===== */
+  /* Panels */
   .panel {
     display: none;
-    background: rgba(18, 25, 45, 0.75);
+    background: rgba(18,25,45,0.75);
     border-radius: 20px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56,189,248,0.15);
     padding: 16px;
-    animation: fade 0.25s ease;
   }
   .panel.active { display: block; }
-  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform:none;} }
 
-  /* ===== Form ===== */
+  /* User bar */
+  .userbar {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(15,23,42,0.85);
+    padding: 10px 14px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    border: 1px solid #1e293b;
+    font-size: 0.8rem;
+  }
+  .userbar .who { color: #cbd5e1; }
+  .userbar .who b { color: #38bdf8; }
+  .userbar .logout {
+    background: #334155; border: none; color: white;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 0.72rem; cursor: pointer;
+  }
+
   label { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px; font-weight: 600; }
   textarea {
-    width: 100%;
-    min-height: 180px;
-    background: rgba(15, 23, 42, 0.9);
+    width: 100%; min-height: 160px;
+    background: rgba(15,23,42,0.9);
     border: 1px solid #2d3a5e;
-    border-radius: 14px;
-    padding: 12px;
-    color: #e2e8f0;
-    font-family: 'SF Mono', Consolas, monospace;
-    font-size: 0.82rem;
-    resize: vertical;
-    transition: 0.2s;
+    border-radius: 14px; padding: 12px;
+    color: #e2e8f0; font-family: monospace;
+    font-size: 0.82rem; resize: vertical;
   }
-  textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.18); }
+  textarea:focus { outline: none; border-color: #3b82f6; }
 
-  .file-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 10px 0 14px;
-  }
+  .file-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
   .file-label {
     background: #1e293b;
     border: 1px dashed #475569;
-    padding: 9px 14px;
-    border-radius: 30px;
-    font-size: 0.78rem;
-    color: #cbd5e1;
+    padding: 9px 14px; border-radius: 30px;
+    font-size: 0.78rem; color: #cbd5e1;
     cursor: pointer;
-    transition: 0.2s;
   }
-  .file-label:hover { background: #334155; border-color: #38bdf8; }
   .file-label input { display: none; }
 
-  .btn-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
   button {
     background: linear-gradient(95deg, #3b82f6, #2563eb);
-    border: none;
-    font-weight: 700;
-    padding: 11px 20px;
-    border-radius: 30px;
-    color: white;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: 0.2s;
-    flex: 1;
-    min-width: 110px;
+    border: none; font-weight: 700;
+    padding: 11px 20px; border-radius: 30px;
+    color: white; cursor: pointer;
+    font-size: 0.85rem; flex: 1; min-width: 110px;
   }
-  button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(59,130,246,0.35); }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
   button.stop { background: linear-gradient(95deg, #ef4444, #b91c1c); }
   button.ghost { background: #334155; }
   button.green { background: linear-gradient(95deg, #22c55e, #16a34a); }
 
-  /* ===== Stats ===== */
   .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    margin-top: 14px;
+    gap: 10px; margin-top: 14px;
   }
   .stat {
-    background: rgba(15, 23, 42, 0.9);
-    border-radius: 14px;
-    padding: 12px;
-    text-align: center;
-    border: 1px solid #1e293b;
+    background: rgba(15,23,42,0.9);
+    border-radius: 14px; padding: 12px;
+    text-align: center; border: 1px solid #1e293b;
     border-left: 3px solid #38bdf8;
   }
   .stat .num { font-size: 1.4rem; font-weight: 800; }
-  .stat .label { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; letter-spacing: 0.5px; }
-  .stat.hit { border-left-color: #4ade80; }
-  .stat.hit .num { color: #4ade80; }
-  .stat.fail { border-left-color: #f87171; }
-  .stat.fail .num { color: #f87171; }
+  .stat .label { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+  .stat.hit { border-left-color: #4ade80; } .stat.hit .num { color:#4ade80; }
+  .stat.fail { border-left-color: #f87171; } .stat.fail .num { color:#f87171; }
 
-  .progress {
-    height: 8px;
-    background: #1e293b;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-top: 14px;
-  }
-  .progress-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #38bdf8, #818cf8);
-    transition: width 0.3s;
-  }
-  #status {
-    margin-top: 10px;
-    font-size: 0.78rem;
-    color: #94a3b8;
-    text-align: center;
-    min-height: 18px;
-  }
+  .progress { height: 8px; background: #1e293b; border-radius: 20px; overflow: hidden; margin-top: 14px; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#38bdf8,#818cf8); transition: width 0.3s; }
+  #status { margin-top: 10px; font-size: 0.78rem; color: #94a3b8; text-align: center; min-height: 18px; }
 
-  /* ===== Hit Cards ===== */
-  .hit-list { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; }
+  /* Hit cards */
+  .hit-list { display: flex; flex-direction: column; gap: 12px; }
   .hit-card {
-    background: linear-gradient(135deg, rgba(15, 42, 31, 0.85), rgba(15, 23, 42, 0.9));
-    border: 1px solid rgba(74, 222, 128, 0.35);
+    background: linear-gradient(135deg, rgba(15,42,31,0.85), rgba(15,23,42,0.9));
+    border: 1px solid rgba(74,222,128,0.35);
     border-left: 4px solid #4ade80;
-    border-radius: 16px;
-    padding: 14px;
+    border-radius: 16px; padding: 14px;
     position: relative;
-    animation: fade 0.3s ease;
-  }
-  .hit-card .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 10px;
   }
   .hit-card .badge-hit {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    color: white;
-    font-size: 0.68rem;
-    font-weight: 800;
-    padding: 4px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.4px;
-    white-space: nowrap;
+    background: linear-gradient(135deg,#22c55e,#16a34a);
+    color: white; font-size: 0.68rem; font-weight: 800;
+    padding: 4px 10px; border-radius: 20px;
   }
-  .hit-card .fields { display: flex; flex-direction: column; gap: 6px; }
-  .hit-card .field {
-    display: flex;
-    gap: 8px;
-    font-size: 0.78rem;
-    color: #e2e8f0;
-    word-break: break-all;
-  }
-  .hit-card .field .ico { flex-shrink: 0; width: 18px; }
+  .hit-card .fields { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .hit-card .field { display: flex; gap: 8px; font-size: 0.78rem; word-break: break-all; }
   .hit-card .field .k { color: #94a3b8; min-width: 78px; }
   .hit-card .field .v { color: #f1f5f9; font-weight: 600; }
-  .hit-card .field .v.mono { font-family: 'SF Mono', Consolas, monospace; background: rgba(0,0,0,0.25); padding: 1px 6px; border-radius: 6px; }
+  .hit-card .field .v.mono { font-family: monospace; background: rgba(0,0,0,0.25); padding: 1px 6px; border-radius: 6px; }
   .hit-card .copy-btn {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #1e293b;
-    border: 1px solid #334155;
-    padding: 5px 10px;
-    border-radius: 20px;
-    color: #cbd5e1;
-    font-size: 0.68rem;
-    cursor: pointer;
+    position: absolute; top: 12px; right: 12px;
+    background: #1e293b; border: 1px solid #334155;
+    padding: 5px 10px; border-radius: 20px;
+    color: #cbd5e1; font-size: 0.68rem; cursor: pointer;
   }
-  .hit-card .copy-btn:hover { background: #334155; }
 
-  /* ===== Fail/All list ===== */
-  .mini-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+  .mini-list { display: flex; flex-direction: column; gap: 6px; }
   .mini-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: rgba(15, 23, 42, 0.85);
+    display: flex; justify-content: space-between; gap: 8px;
+    padding: 10px 12px; border-radius: 10px;
+    background: rgba(15,23,42,0.85);
     border-left: 3px solid #334155;
-    font-size: 0.76rem;
-    word-break: break-all;
+    font-size: 0.76rem; word-break: break-all;
   }
-  .mini-item.hit { border-left-color: #4ade80; }
-  .mini-item.fail { border-left-color: #f87171; }
-  .mini-item .c { color: #cbd5e1; font-family: monospace; }
-  .mini-item .s { font-weight: 700; white-space: nowrap; }
-  .mini-item .s.hit { color: #4ade80; }
-  .mini-item .s.fail { color: #f87171; }
+  .mini-item.hit { border-left-color:#4ade80; }
+  .mini-item.fail { border-left-color:#f87171; }
+  .mini-item .s.hit { color:#4ade80; font-weight:700; }
+  .mini-item .s.fail { color:#f87171; font-weight:700; }
 
-  .empty {
-    text-align: center;
-    padding: 40px 16px;
-    color: #64748b;
-    font-size: 0.85rem;
+  .empty { text-align:center; padding:40px 16px; color:#64748b; font-size:0.85rem; }
+  .empty .emo { font-size:2rem; display:block; margin-bottom:8px; }
+
+  /* Admin */
+  .admin-user {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; border-radius: 10px;
+    background: rgba(15,23,42,0.85);
+    border-left: 3px solid #38bdf8;
+    margin-bottom: 8px; font-size: 0.8rem;
   }
-  .empty .emo { font-size: 2rem; display: block; margin-bottom: 8px; }
+  .admin-user.pending { border-left-color: #facc15; }
+  .admin-user .actions button {
+    padding: 5px 12px; font-size: 0.72rem; min-width: auto;
+    flex: 0 0 auto; margin-left: 6px;
+  }
+  .admin-user .actions button.approve { background: #16a34a; }
+  .admin-user .actions button.del { background: #b91c1c; }
 
-  /* ===== Toast ===== */
   #toast {
-    position: fixed;
-    bottom: 20px; left: 50%;
+    position: fixed; bottom: 20px; left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #1e293b;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 30px;
-    font-size: 0.8rem;
-    border: 1px solid #334155;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s;
+    background: #1e293b; color: white;
+    padding: 10px 18px; border-radius: 30px;
+    font-size: 0.8rem; border: 1px solid #334155;
+    opacity: 0; pointer-events: none; transition: all 0.3s;
     z-index: 999;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ===== Mobile tweaks ===== */
   @media (max-width: 480px) {
     header h1 { font-size: 1.2rem; }
-    .tab { font-size: 0.72rem; padding: 9px 6px; min-width: 78px; }
+    .tab { font-size: 0.72rem; min-width: 72px; padding: 9px 6px; }
     .stat .num { font-size: 1.15rem; }
-    .hit-card .field .k { min-width: 66px; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- ===== Header ===== -->
-  <header>
-    <h1>🔒 ExpressVPN Checker</h1>
-    <p>Config by <a href="https://t.me/shakib2016" target="_blank">@SHAKIB2016</a> · Hits auto-copy ready</p>
-  </header>
+  <!-- ===== LOGIN PAGE ===== -->
+  <div id="loginPage">
+    <header>
+      <h1>🔒 ExpressVPN Checker</h1>
+      <p>Config by <a href="https://t.me/shakib2016">@SHAKIB2016</a></p>
+    </header>
 
-  <!-- ===== Tabs ===== -->
-  <div class="tabs">
-    <button class="tab active" data-tab="combo">📝 Combo</button>
-    <button class="tab" data-tab="stats">📊 Stats</button>
-    <button class="tab" data-tab="hits">🔥 Hits <span class="badge" id="tabHitCount">0</span></button>
-    <button class="tab" data-tab="all">📋 All</button>
+    <div class="login-box">
+      <h2 id="authTitle">🔑 Login</h2>
+
+      <div class="field">
+        <label>Username</label>
+        <input id="authUser" type="text" autocomplete="username" placeholder="your username" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="authPass" type="password" autocomplete="current-password" placeholder="your password" />
+      </div>
+
+      <button class="btn-main" id="loginBtn">Login</button>
+      <button class="btn-main" id="registerBtn" style="display:none;background:#334155;">Register</button>
+
+      <div class="link-row">
+        <span id="switchText">Don't have an account?</span>
+        <a id="switchLink">Register</a>
+      </div>
+    </div>
   </div>
 
-  <!-- ===== Combo Panel ===== -->
-  <section class="panel active" id="panel-combo">
-    <label>📋 Paste combos (email:password) — one per line</label>
-    <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456"></textarea>
+  <!-- ===== MAIN APP ===== -->
+  <div id="appPage" style="display:none;">
+    <header>
+      <h1>🔒 ExpressVPN Checker</h1>
+      <p>Config by <a href="https://t.me/shakib2016">@SHAKIB2016</a></p>
+    </header>
 
-    <div class="file-row">
-      <label class="file-label">
-        📁 Upload .txt
-        <input type="file" id="fileInput" accept=".txt,text/plain" />
-      </label>
-      <label class="file-label" id="clearInput">🗑️ Clear</label>
+    <div class="userbar">
+      <div class="who">👤 <b id="whoUser">—</b> <span id="whoRole"></span></div>
+      <button class="logout" id="logoutBtn">Logout</button>
     </div>
 
-    <div class="btn-row">
-      <button id="startBtn" class="green">▶ Start</button>
-      <button id="stopBtn" class="stop" disabled>⏹ Stop</button>
+    <div class="tabs">
+      <button class="tab active" data-tab="combo">📝 Combo</button>
+      <button class="tab" data-tab="stats">📊 Stats</button>
+      <button class="tab" data-tab="hits">🔥 Hits <span class="badge" id="tabHitCount">0</span></button>
+      <button class="tab" data-tab="all">📋 All</button>
+      <button class="tab" data-tab="admin" id="adminTab" style="display:none;">👑 Admin</button>
     </div>
 
-    <div class="stats">
-      <div class="stat"><div class="num" id="statTotal">0</div><div class="label">Total</div></div>
-      <div class="stat"><div class="num" id="statChecked">0</div><div class="label">Checked</div></div>
-      <div class="stat hit"><div class="num" id="statHits">0</div><div class="label">🔥 HITS</div></div>
-      <div class="stat fail"><div class="num" id="statFails">0</div><div class="label">❌ FAIL</div></div>
-    </div>
+    <!-- Combo Panel -->
+    <section class="panel active" id="panel-combo">
+      <label>📋 Paste combos (email:password) — one per line</label>
+      <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456"></textarea>
 
-    <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
-    <div id="status">⚡ Ready</div>
+      <div class="file-row">
+        <label class="file-label">📁 Upload .txt<input type="file" id="fileInput" accept=".txt,text/plain"></label>
+        <label class="file-label" id="clearInput">🗑️ Clear</label>
+      </div>
 
-    <div class="btn-row" style="margin-top:14px;">
-      <button id="exportHits" class="ghost">📥 Export Hits</button>
-      <button id="exportAll" class="ghost">📄 Export All</button>
-    </div>
-  </section>
+      <div class="btn-row">
+        <button id="startBtn" class="green">▶ Start</button>
+        <button id="stopBtn" class="stop" disabled>⏹ Stop</button>
+      </div>
 
-  <!-- ===== Stats Panel ===== -->
-  <section class="panel" id="panel-stats">
-    <div class="stats">
-      <div class="stat"><div class="num" id="statTotal2">0</div><div class="label">Total</div></div>
-      <div class="stat"><div class="num" id="statChecked2">0</div><div class="label">Checked</div></div>
-      <div class="stat hit"><div class="num" id="statHits2">0</div><div class="label">🔥 HITS</div></div>
-      <div class="stat fail"><div class="num" id="statFails2">0</div><div class="label">❌ FAIL</div></div>
-    </div>
-    <div class="progress" style="margin-top:20px;"><div class="progress-fill" id="progressFill2"></div></div>
-    <div id="status2" style="margin-top:10px;text-align:center;font-size:0.8rem;color:#94a3b8;">⚡ Ready</div>
-  </section>
+      <div class="stats">
+        <div class="stat"><div class="num" id="statTotal">0</div><div class="label">Total</div></div>
+        <div class="stat"><div class="num" id="statChecked">0</div><div class="label">Checked</div></div>
+        <div class="stat hit"><div class="num" id="statHits">0</div><div class="label">🔥 HITS</div></div>
+        <div class="stat fail"><div class="num" id="statFails">0</div><div class="label">❌ FAIL</div></div>
+      </div>
 
-  <!-- ===== Hits Panel ===== -->
-  <section class="panel" id="panel-hits">
-    <div class="hit-list" id="hitList">
-      <div class="empty"><span class="emo">🔥</span>No hits yet.<br>Start checking to see results here.</div>
-    </div>
-  </section>
+      <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="status">⚡ Ready</div>
 
-  <!-- ===== All Panel ===== -->
-  <section class="panel" id="panel-all">
-    <div class="mini-list" id="allList">
-      <div class="empty"><span class="emo">📋</span>No results yet.</div>
-    </div>
-  </section>
+      <div class="btn-row" style="margin-top:14px;">
+        <button id="exportHits" class="ghost">📥 Export Hits</button>
+        <button id="exportAll" class="ghost">📄 Export All</button>
+      </div>
+    </section>
+
+    <!-- Stats Panel -->
+    <section class="panel" id="panel-stats">
+      <div class="stats">
+        <div class="stat"><div class="num" id="statTotal2">0</div><div class="label">Total</div></div>
+        <div class="stat"><div class="num" id="statChecked2">0</div><div class="label">Checked</div></div>
+        <div class="stat hit"><div class="num" id="statHits2">0</div><div class="label">🔥 HITS</div></div>
+        <div class="stat fail"><div class="num" id="statFails2">0</div><div class="label">❌ FAIL</div></div>
+      </div>
+      <div class="progress" style="margin-top:20px;"><div class="progress-fill" id="progressFill2"></div></div>
+      <div id="status2" style="margin-top:10px;text-align:center;font-size:.8rem;color:#94a3b8;">⚡ Ready</div>
+    </section>
+
+    <!-- Hits Panel -->
+    <section class="panel" id="panel-hits">
+      <div class="hit-list" id="hitList">
+        <div class="empty"><span class="emo">🔥</span>No hits yet.</div>
+      </div>
+    </section>
+
+    <!-- All Panel -->
+    <section class="panel" id="panel-all">
+      <div class="mini-list" id="allList">
+        <div class="empty"><span class="emo">📋</span>No results yet.</div>
+      </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section class="panel" id="panel-admin">
+      <h3 style="margin-bottom:12px;font-size:1rem;">👑 User Management</h3>
+      <div id="adminUserList"><div class="empty">Loading...</div></div>
+    </section>
+  </div>
 </div>
 
 <div id="toast">Copied!</div>
 
 <script>
 // ============================================================
-//  ExpressVPN Checker – Frontend
+//  Auth State
 // ============================================================
-const API_ENDPOINT = '/api/check';
+let AUTH_TOKEN = localStorage.getItem('evpn_token') || null;
+let AUTH_USER = null;
 
-// DOM
-const comboInput  = document.getElementById('comboInput');
-const fileInput   = document.getElementById('fileInput');
-const clearInput  = document.getElementById('clearInput');
-const startBtn    = document.getElementById('startBtn');
-const stopBtn     = document.getElementById('stopBtn');
-const exportHits  = document.getElementById('exportHits');
-const exportAll   = document.getElementById('exportAll');
-const statusEl    = document.getElementById('status');
-const statusEl2   = document.getElementById('status2');
-const progressFill  = document.getElementById('progressFill');
-const progressFill2 = document.getElementById('progressFill2');
-const hitList     = document.getElementById('hitList');
-const allList     = document.getElementById('allList');
-const tabHitCount = document.getElementById('tabHitCount');
-const toastEl     = document.getElementById('toast');
+function saveToken(t) {
+  AUTH_TOKEN = t;
+  if (t) localStorage.setItem('evpn_token', t);
+  else localStorage.removeItem('evpn_token');
+}
 
-// State
-let combos = [];          // [{username, password}]
-let results = [];         // [{username, password, valid, hit, plan, expiry, pcKey, keyExpire, keyStatus, message}]
-let running = false;
-let currentIdx = 0;
-let stats = { total: 0, checked: 0, hits: 0, fails: 0 };
+function authHeader() {
+  return AUTH_TOKEN ? { 'Authorization': 'Bearer ' + AUTH_TOKEN } : {};
+}
+
+// ============================================================
+//  Auth: Login/Register/Verify
+// ============================================================
+async function doLogin() {
+  const u = document.getElementById('authUser').value.trim();
+  const p = document.getElementById('authPass').value;
+  if (!u || !p) return showToast('❌ Enter username and password');
+
+  const res = await fetch('/api/auth?action=login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: u, password: p })
+  });
+  const data = await res.json();
+  if (!data.ok) return showToast('❌ ' + (data.message || 'Login failed'));
+
+  saveToken(data.token);
+  AUTH_USER = data.user;
+  showToast('✅ Welcome ' + data.user.username);
+  showApp();
+}
+
+async function doRegister() {
+  const u = document.getElementById('authUser').value.trim();
+  const p = document.getElementById('authPass').value;
+  if (!u || !p) return showToast('❌ Enter username and password');
+
+  const res = await fetch('/api/auth?action=register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: u, password: p })
+  });
+  const data = await res.json();
+  showToast((data.ok ? '✅ ' : '❌ ') + data.message);
+}
+
+async function verifyToken() {
+  if (!AUTH_TOKEN) return false;
+  try {
+    const res = await fetch('/api/auth?action=verify', { headers: authHeader() });
+    if (!res.ok) return false;
+    const data = await res.json();
+    if (data.ok) { AUTH_USER = data.user; return true; }
+    return false;
+  } catch (e) { return false; }
+}
+
+function showLogin() {
+  document.getElementById('loginPage').style.display = 'block';
+  document.getElementById('appPage').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appPage').style.display = 'block';
+  document.getElementById('whoUser').textContent = AUTH_USER.username;
+  document.getElementById('whoRole').textContent = AUTH_USER.role === 'admin' ? '· 👑 Admin' : '';
+  if (AUTH_USER.role === 'admin') {
+    document.getElementById('adminTab').style.display = '';
+  }
+}
+
+// Switch login / register
+let mode = 'login';
+function updateAuthUI() {
+  document.getElementById('authTitle').textContent = mode === 'login' ? '🔑 Login' : '📝 Register';
+  document.getElementById('loginBtn').style.display = mode === 'login' ? '' : 'none';
+  document.getElementById('registerBtn').style.display = mode === 'register' ? '' : 'none';
+  document.getElementById('switchText').textContent = mode === 'login' ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('switchLink').textContent = mode === 'login' ? 'Register' : 'Login';
+}
+document.getElementById('switchLink').addEventListener('click', () => {
+  mode = mode === 'login' ? 'register' : 'login';
+  updateAuthUI();
+});
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('registerBtn').addEventListener('click', doRegister);
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  saveToken(null);
+  AUTH_USER = null;
+  showLogin();
+  showToast('👋 Logged out');
+});
 
 // ============================================================
 //  Tabs
@@ -429,294 +474,238 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'admin') loadAdminUsers();
   });
 });
 
 // ============================================================
-//  Toast
+//  Rest of app (checking logic – same as before)
 // ============================================================
-let toastTimer = null;
+const comboInput = document.getElementById('comboInput');
+const fileInput = document.getElementById('fileInput');
+const clearInput = document.getElementById('clearInput');
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const exportHits = document.getElementById('exportHits');
+const exportAll = document.getElementById('exportAll');
+const statusEl = document.getElementById('status');
+const statusEl2 = document.getElementById('status2');
+const progressFill = document.getElementById('progressFill');
+const progressFill2 = document.getElementById('progressFill2');
+const hitList = document.getElementById('hitList');
+const allList = document.getElementById('allList');
+const tabHitCount = document.getElementById('tabHitCount');
+const toastEl = document.getElementById('toast');
+
+let combos = [], results = [], running = false, currentIdx = 0;
+let stats = { total: 0, checked: 0, hits: 0, fails: 0 };
+
 function showToast(msg) {
   toastEl.textContent = msg;
   toastEl.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1500);
+  setTimeout(() => toastEl.classList.remove('show'), 1500);
 }
 
-// ============================================================
-//  File upload
-// ============================================================
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    comboInput.value = ev.target.result;
-    showToast('📁 File loaded: ' + file.name);
-  };
-  reader.readAsText(file);
-  fileInput.value = '';
+fileInput.addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => { comboInput.value = ev.target.result; showToast('📁 ' + f.name); };
+  r.readAsText(f); fileInput.value = '';
 });
+clearInput.addEventListener('click', () => { comboInput.value = ''; showToast('🗑️ Cleared'); });
 
-clearInput.addEventListener('click', () => {
-  comboInput.value = '';
-  showToast('🗑️ Cleared');
-});
-
-// ============================================================
-//  Parse combos
-// ============================================================
 function parseCombos(raw) {
   const out = [];
-  raw.split(/\r?\n/).forEach(line => {
-    const t = line.trim();
-    if (!t) return;
-    const idx = t.indexOf(':');
-    if (idx === -1) return;
-    const u = t.slice(0, idx).trim();
-    const p = t.slice(idx + 1).trim();
+  raw.split(/\r?\n/).forEach(l => {
+    const t = l.trim(); if (!t) return;
+    const i = t.indexOf(':'); if (i === -1) return;
+    const u = t.slice(0, i).trim(), p = t.slice(i + 1).trim();
     if (u && p) out.push({ username: u, password: p });
   });
   return out;
 }
 
-// ============================================================
-//  UI update
-// ============================================================
 function updateStats() {
-  document.getElementById('statTotal').textContent   = stats.total;
-  document.getElementById('statChecked').textContent = stats.checked;
-  document.getElementById('statHits').textContent    = stats.hits;
-  document.getElementById('statFails').textContent   = stats.fails;
-
-  document.getElementById('statTotal2').textContent   = stats.total;
-  document.getElementById('statChecked2').textContent = stats.checked;
-  document.getElementById('statHits2').textContent    = stats.hits;
-  document.getElementById('statFails2').textContent   = stats.fails;
-
+  ['statTotal','statTotal2'].forEach(id => document.getElementById(id).textContent = stats.total);
+  ['statChecked','statChecked2'].forEach(id => document.getElementById(id).textContent = stats.checked);
+  ['statHits','statHits2'].forEach(id => document.getElementById(id).textContent = stats.hits);
+  ['statFails','statFails2'].forEach(id => document.getElementById(id).textContent = stats.fails);
   tabHitCount.textContent = stats.hits;
-
   const pct = stats.total ? (stats.checked / stats.total) * 100 : 0;
-  progressFill.style.width  = pct + '%';
+  progressFill.style.width = pct + '%';
   progressFill2.style.width = pct + '%';
 }
-
-function setStatus(msg) {
-  statusEl.textContent = msg;
-  statusEl2.textContent = msg;
-}
-
-// ============================================================
-//  Render results
-// ============================================================
+function setStatus(m) { statusEl.textContent = m; statusEl2.textContent = m; }
 function escapeHtml(s) {
-  if (s === null || s === undefined) return '';
-  return String(s).replace(/[&<>"']/g, m => (
-    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]
-  ));
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
 function renderAll() {
-  // Hits
   const hits = results.filter(r => r.hit);
-  if (hits.length === 0) {
-    hitList.innerHTML = '<div class="empty"><span class="emo">🔥</span>No hits yet.<br>Start checking to see results here.</div>';
+  if (!hits.length) {
+    hitList.innerHTML = '<div class="empty"><span class="emo">🔥</span>No hits yet.</div>';
   } else {
-    hitList.innerHTML = hits.map(h => hitCard(h)).join('');
-    hitList.querySelectorAll('.copy-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        navigator.clipboard.writeText(btn.dataset.combo)
-          .then(() => showToast('📋 Copied: ' + btn.dataset.combo))
-          .catch(() => showToast('❌ Copy failed'));
+    hitList.innerHTML = hits.map(h => `
+      <div class="hit-card">
+        <button class="copy-btn" data-combo="${escapeHtml(h.username+':'+h.password)}">📋 Copy</button>
+        <span class="badge-hit">🔥 HIT · SUBSCRIPTION VALID</span>
+        <div class="fields">
+          <div class="field"><span class="k">📧 Email:</span><span class="v mono">${escapeHtml(h.username)}</span></div>
+          <div class="field"><span class="k">🔑 Password:</span><span class="v mono">${escapeHtml(h.password)}</span></div>
+          <div class="field"><span class="k">📋 Plan:</span><span class="v">${escapeHtml(h.plan||'—')}</span></div>
+          <div class="field"><span class="k">📅 Expiry:</span><span class="v">${escapeHtml(h.expiry||'—')}</span></div>
+          <div class="field"><span class="k">🔑 PC Key:</span><span class="v mono">${escapeHtml(h.pcKey||'—')}</span></div>
+          <div class="field"><span class="k">📅 Key Expiry:</span><span class="v">${escapeHtml(h.keyExpire||'—')}</span></div>
+          <div class="field"><span class="k">📌 Status:</span><span class="v">${escapeHtml(h.keyStatus||'—')}</span></div>
+        </div>
+      </div>`).join('');
+    hitList.querySelectorAll('.copy-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        navigator.clipboard.writeText(b.dataset.combo).then(() => showToast('📋 Copied'));
       });
     });
   }
 
-  // All
-  if (results.length === 0) {
+  if (!results.length) {
     allList.innerHTML = '<div class="empty"><span class="emo">📋</span>No results yet.</div>';
   } else {
     allList.innerHTML = results.map(r => {
       const cls = r.hit ? 'hit' : 'fail';
-      const st  = r.hit ? '🔥 HIT' : '❌ FAIL';
       return `<div class="mini-item ${cls}">
-        <span class="c">${escapeHtml(r.username)}:${escapeHtml(r.password)}</span>
-        <span class="s ${cls}">${st}</span>
-      </div>`;
+        <span>${escapeHtml(r.username)}:${escapeHtml(r.password)}</span>
+        <span class="s ${cls}">${r.hit?'🔥 HIT':'❌ FAIL'}</span></div>`;
     }).join('');
   }
 }
 
-function hitCard(h) {
-  const combo = `${h.username}:${h.password}`;
-  return `
-    <div class="hit-card">
-      <button class="copy-btn" data-combo="${escapeHtml(combo)}">📋 Copy</button>
-      <div class="top">
-        <span class="badge-hit">🔥 HIT · SUBSCRIPTION VALID</span>
-      </div>
-      <div class="fields">
-        <div class="field"><span class="ico">📧</span><span class="k">Email:</span><span class="v mono">${escapeHtml(h.username)}</span></div>
-        <div class="field"><span class="ico">🔑</span><span class="k">Password:</span><span class="v mono">${escapeHtml(h.password)}</span></div>
-        <div class="field"><span class="ico">📋</span><span class="k">Plan:</span><span class="v">${escapeHtml(h.plan || '—')}</span></div>
-        <div class="field"><span class="ico">📅</span><span class="k">Expiry:</span><span class="v">${escapeHtml(h.expiry || '—')}</span></div>
-        <div class="field"><span class="ico">🔑</span><span class="k">PC Key:</span><span class="v mono">${escapeHtml(h.pcKey || '—')}</span></div>
-        <div class="field"><span class="ico">📅</span><span class="k">Key Expiry:</span><span class="v">${escapeHtml(h.keyExpire || '—')}</span></div>
-        <div class="field"><span class="ico">📌</span><span class="k">Status:</span><span class="v">${escapeHtml(h.keyStatus || '—')}</span></div>
-      </div>
-    </div>`;
-}
-
-// ============================================================
-//  Check one combo
-// ============================================================
 async function checkOne(username, password) {
   try {
-    const res = await fetch(API_ENDPOINT, {
+    const res = await fetch('/api/check', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
       body: JSON.stringify({ username, password })
     });
+    if (res.status === 401) {
+      showToast('🔒 Session expired, please login');
+      saveToken(null); showLogin(); return null;
+    }
     const json = await res.json();
     return {
       username, password,
-      valid:      json.valid === true,
-      hit:        json.hit === true,
-      plan:       json.plan       || null,
-      expiry:     json.expiry     || null,
-      pcKey:      json.pcKey      || null,
-      keyExpire:  json.keyExpire  || null,
-      keyStatus:  json.keyStatus  || null,
-      message:    json.message    || ''
+      valid: json.valid === true, hit: json.hit === true,
+      plan: json.plan || null, expiry: json.expiry || null,
+      pcKey: json.pcKey || null, keyExpire: json.keyExpire || null,
+      keyStatus: json.keyStatus || null, message: json.message || ''
     };
   } catch (err) {
-    return {
-      username, password,
-      valid: false, hit: false,
-      message: 'Network error: ' + err.message
-    };
+    return { username, password, valid: false, hit: false, message: 'Error: ' + err.message };
   }
 }
 
-// ============================================================
-//  Runner (serial, 300ms delay)
-// ============================================================
 async function runner() {
   if (!running) return;
-
   if (currentIdx >= combos.length) {
-    running = false;
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    setStatus('✅ Completed · ' + stats.hits + ' HIT(s) found');
-    showToast('✅ Checking complete');
-    return;
+    running = false; startBtn.disabled = false; stopBtn.disabled = true;
+    setStatus('✅ Completed · ' + stats.hits + ' HIT(s)'); return;
   }
-
   const c = combos[currentIdx];
-  setStatus(`🔍 Checking ${currentIdx + 1}/${combos.length} · ${c.username}`);
-
-  const result = await checkOne(c.username, c.password);
-  results.push(result);
-
-  stats.checked++;
-  if (result.hit) stats.hits++;
-  else stats.fails++;
-
-  updateStats();
-  renderAll();
-
+  setStatus(`🔍 ${currentIdx + 1}/${combos.length} · ${c.username}`);
+  const r = await checkOne(c.username, c.password);
+  if (r === null) { running = false; startBtn.disabled=false; stopBtn.disabled=true; return; }
+  results.push(r);
+  stats.checked++; if (r.hit) stats.hits++; else stats.fails++;
+  updateStats(); renderAll();
   currentIdx++;
+  if (running && currentIdx < combos.length) setTimeout(runner, 300);
+  else { running = false; startBtn.disabled=false; stopBtn.disabled=true; setStatus('✅ Completed · '+stats.hits+' HIT(s)'); }
+}
 
-  if (running && currentIdx < combos.length) {
-    setTimeout(runner, 300);
-  } else if (currentIdx >= combos.length) {
-    running = false;
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    setStatus('✅ Completed · ' + stats.hits + ' HIT(s) found');
-    showToast('✅ Checking complete');
-  }
+startBtn.addEventListener('click', () => {
+  const parsed = parseCombos(comboInput.value);
+  if (!parsed.length) return showToast('❌ No valid combos');
+  combos = parsed; results = []; currentIdx = 0;
+  stats = { total: combos.length, checked: 0, hits: 0, fails: 0 };
+  updateStats(); renderAll();
+  running = true; startBtn.disabled = true; stopBtn.disabled = false;
+  setStatus('🚀 Starting...'); runner();
+});
+stopBtn.addEventListener('click', () => { running = false; startBtn.disabled=false; stopBtn.disabled=true; setStatus('⏸️ Stopped'); });
+
+exportHits.addEventListener('click', () => {
+  const h = results.filter(r => r.hit);
+  if (!h.length) return showToast('❌ No hits');
+  const txt = h.map(x =>
+    `📧 Email: ${x.username}\n🔑 Password: ${x.password}\n📋 Plan: ${x.plan||'—'}\n📅 Expiry: ${x.expiry||'—'}\n🔑 PC Key: ${x.pcKey||'—'}\n📅 Key Expiry: ${x.keyExpire||'—'}\n📌 Status: ${x.keyStatus||'—'}\n---`
+  ).join('\n\n');
+  dl(txt, 'expressvpn_hits.txt'); showToast('📥 ' + h.length + ' hit(s)');
+});
+exportAll.addEventListener('click', () => {
+  if (!results.length) return showToast('❌ Empty');
+  const txt = results.map(r => `[${r.hit?'HIT':'FAIL'}] ${r.username}:${r.password} | ${r.plan||'—'} | ${r.expiry||'—'}`).join('\n');
+  dl(txt, 'expressvpn_all.txt'); showToast('📄 Exported');
+});
+function dl(text, name) {
+  const b = new Blob([text], {type:'text/plain'}); const u = URL.createObjectURL(b);
+  const a = document.createElement('a'); a.href = u; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u);
 }
 
 // ============================================================
-//  Start / Stop
+//  Admin: users list
 // ============================================================
-startBtn.addEventListener('click', () => {
-  const parsed = parseCombos(comboInput.value);
-  if (parsed.length === 0) {
-    showToast('❌ No valid combos');
-    return;
-  }
-  combos = parsed;
-  results = [];
-  currentIdx = 0;
-  stats = { total: combos.length, checked: 0, hits: 0, fails: 0 };
-  updateStats();
-  renderAll();
-
-  running = true;
-  startBtn.disabled = true;
-  stopBtn.disabled = false;
-  setStatus('🚀 Starting...');
-  showToast('🚀 Checking ' + combos.length + ' combos');
-  runner();
-});
-
-stopBtn.addEventListener('click', () => {
-  running = false;
-  startBtn.disabled = false;
-  stopBtn.disabled = true;
-  setStatus('⏸️ Stopped');
-});
-
-// ============================================================
-//  Export
-// ============================================================
-exportHits.addEventListener('click', () => {
-  const hits = results.filter(r => r.hit);
-  if (hits.length === 0) { showToast('❌ No hits to export'); return; }
-  const lines = hits.map(h =>
-    `📧 Email: ${h.username}\n` +
-    `🔑 Password: ${h.password}\n` +
-    `📋 Plan: ${h.plan || '—'}\n` +
-    `📅 Expiry: ${h.expiry || '—'}\n` +
-    `🔑 PC Key: ${h.pcKey || '—'}\n` +
-    `📅 Key Expiry: ${h.keyExpire || '—'}\n` +
-    `📌 Status: ${h.keyStatus || '—'}\n` +
-    `----------------------------------------`
-  ).join('\n\n');
-  downloadText(lines, 'expressvpn_hits.txt');
-  showToast('📥 Exported ' + hits.length + ' hit(s)');
-});
-
-exportAll.addEventListener('click', () => {
-  if (results.length === 0) { showToast('❌ Nothing to export'); return; }
-  const lines = results.map(r => {
-    const st = r.hit ? 'HIT' : 'FAIL';
-    return `[${st}] ${r.username}:${r.password} | Plan: ${r.plan || '—'} | Expiry: ${r.expiry || '—'}`;
-  }).join('\n');
-  downloadText(lines, 'expressvpn_all.txt');
-  showToast('📄 Exported ' + results.length + ' result(s)');
-});
-
-function downloadText(text, filename) {
-  const blob = new Blob([text], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+async function loadAdminUsers() {
+  const list = document.getElementById('adminUserList');
+  list.innerHTML = '<div class="empty">Loading...</div>';
+  const res = await fetch('/api/auth?action=list', { headers: authHeader() });
+  if (!res.ok) { list.innerHTML = '<div class="empty">Access denied</div>'; return; }
+  const data = await res.json();
+  if (!data.users || !data.users.length) { list.innerHTML = '<div class="empty">No users</div>'; return; }
+  list.innerHTML = data.users.map(u => `
+    <div class="admin-user ${u.approved?'':'pending'}">
+      <div>
+        <b>${escapeHtml(u.username)}</b>
+        ${u.role==='admin'?'· 👑':''}
+        ${u.approved?'<span style="color:#4ade80">✅ approved</span>':'<span style="color:#facc15">⏳ pending</span>'}
+      </div>
+      <div class="actions">
+        ${!u.approved?`<button class="approve" data-u="${escapeHtml(u.username)}">Approve</button>`:''}
+        ${u.role!=='admin'?`<button class="del" data-u="${escapeHtml(u.username)}">Delete</button>`:''}
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('button.approve').forEach(b => {
+    b.addEventListener('click', async () => {
+      await fetch('/api/auth?action=approve', {
+        method:'POST',
+        headers:{'Content-Type':'application/json', ...authHeader()},
+        body: JSON.stringify({ username: b.dataset.u })
+      });
+      loadAdminUsers();
+    });
+  });
+  list.querySelectorAll('button.del').forEach(b => {
+    b.addEventListener('click', async () => {
+      if (!confirm('Delete ' + b.dataset.u + '?')) return;
+      await fetch('/api/auth?action=delete', {
+        method:'POST',
+        headers:{'Content-Type':'application/json', ...authHeader()},
+        body: JSON.stringify({ username: b.dataset.u })
+      });
+      loadAdminUsers();
+    });
+  });
 }
 
 // ============================================================
 //  Init
 // ============================================================
-updateStats();
-renderAll();
+(async () => {
+  updateAuthUI();
+  updateStats();
+  renderAll();
+  if (AUTH_TOKEN && await verifyToken()) showApp();
+  else showLogin();
+})();
 </script>
 </body>
 </html>
