@@ -33,18 +33,33 @@ export default async function handler(req, res) {
     return res.status(result.ok ? 200 : 400).json(result);
   }
 
-  // ===== Random generate =====
+  // ===== Random generate (multiple) =====
   if (action === 'random' && req.method === 'POST') {
-    const { validityDays } = req.body || {};
-    // ৫ বার চেষ্টা করব unique username পেতে
-    let attempt = 0, result;
-    while (attempt < 5) {
-      const { username, password } = generateRandomUser();
-      result = await createUser(username, password, validityDays);
-      if (result.ok) return res.status(200).json({ ok: true, username, password, validityDays });
-      attempt++;
+    const { validityDays, count } = req.body || {};
+    // count 1 থেকে 100 এর মধ্যে
+    const n = Math.min(Math.max(parseInt(count) || 1, 1), 100);
+
+    const created = [];
+    for (let i = 0; i < n; i++) {
+      let attempt = 0, result;
+      while (attempt < 15) {
+        const { username, password } = generateRandomUser();
+        result = await createUser(username, password, validityDays);
+        if (result.ok) {
+          created.push({ username, password, validityDays });
+          break;
+        }
+        attempt++;
+      }
     }
-    return res.status(400).json({ ok: false, message: 'Failed to generate unique user' });
+
+    return res.status(200).json({
+      ok: true,
+      users: created,
+      count: created.length,
+      requested: n,
+      validityDays: validityDays || 0
+    });
   }
 
   // ===== Delete user =====
