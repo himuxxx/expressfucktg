@@ -3,6 +3,10 @@ import {
   createUser, listUsers, deleteUser, setValidity,
   validateSession, generateRandomUser
 } from '../lib/auth.js';
+import {
+  listProxies, addProxy, deleteProxy, checkAllProxies, testProxy, invalidateCache
+} from '../lib/proxy.js';
+import { getDB } from '../lib/db.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -33,12 +37,10 @@ export default async function handler(req, res) {
     return res.status(result.ok ? 200 : 400).json(result);
   }
 
-  // ===== Random generate (multiple) =====
+  // ===== Random generate =====
   if (action === 'random' && req.method === 'POST') {
     const { validityDays, count } = req.body || {};
-    // count 1 থেকে 100 এর মধ্যে
     const n = Math.min(Math.max(parseInt(count) || 1, 1), 100);
-
     const created = [];
     for (let i = 0; i < n; i++) {
       let attempt = 0, result;
@@ -52,7 +54,6 @@ export default async function handler(req, res) {
         attempt++;
       }
     }
-
     return res.status(200).json({
       ok: true,
       users: created,
@@ -74,6 +75,76 @@ export default async function handler(req, res) {
     const { username, validityDays } = req.body || {};
     const result = await setValidity(username || '', validityDays);
     return res.status(result.ok ? 200 : 400).json(result);
+  }
+
+  // ===== PROXY: List =====
+  if (action === 'proxy-list' && req.method === 'GET') {
+    const list = await listProxies();
+    return res.status(200).json({
+      ok: true,
+      proxies: list.map(p => ({
+        id: p._id.toString(),
+        url: p.url,
+        status: p.status,
+        latency: p.latency,
+        proxyIp: p.proxyIp,
+        lastChecked: p.lastChecked,
+        createdAt: p.createdAt
+      }))
+    });
+  }
+
+  // ===== PROXY: Add =====
+  if (action === 'proxy-add' && req.method === 'POST') {
+    const { url } = req.body || {};
+    const r = await addProxy(url);
+    return res.status(r.ok ? 200 : 400).json(r);
+  }
+
+  // ===== PROXY: Delete =====
+  if (action === 'proxy-delete' && req.method === 'POST') {
+    const { id } = req.body || {};
+    const r = await deleteProxy(id);
+    return res.status(r.ok ? 200 : 400).json(r);
+  }
+
+  // ===== PROXY: Test single =====
+  if (action === 'proxy-test' && req.method === 'POST') {
+    const { id } = req.body || {};
+    if (!id) return res.status(400).json({ ok: false, message: 'ID required' });
+    try {
+      const db = await getDB();
+      const c = db.collection('proxies');
+      const { ObjectId } = await import('mongodb');
+      const p = await c.findOne({ _id: new ObjectId(id) });
+      if (!p) return res.status(404).json({ ok: false, message: 'Proxy not found' });
+      const r = await testProxy(p.url);
+      await c.updateOne({ _id: p._id }, {
+        $set: {
+          status: r.ok ? 'live' : 'dead',
+          lastChecked: new Date(),
+          latency: r.ok ? r.latency : null,
+          proxyIp: r.ip || null
+        }
+      });
+      invalidateCache();
+      return res.status(200).json({ ok: true, result: r });
+    } catch (e) {
+      return res.status(500).json({ ok: false, message: e.message });
+    }
+  }
+
+  // ===== PROXY: Test all =====
+  if (action === 'proxy-check-all' && req.method === 'POST') {
+    const results = await checkAllProxies();
+    const live = results.filter(r => r.ok).length;
+    return res.status(200).json({
+      ok: true,
+      total: results.length,
+      live,
+      dead: results.length - live,
+      results
+    });
   }
 
   return res.status(404).json({ error: 'Unknown action' });
