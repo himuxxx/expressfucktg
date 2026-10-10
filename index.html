@@ -378,18 +378,6 @@
     letter-spacing: 0.4px;
     margin-bottom: 6px;
   }
-  .gen-result .gen-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
-    font-family: monospace;
-    font-size: 0.82rem;
-    color: #f1f5f9;
-    border-bottom: 1px solid rgba(56, 189, 248, 0.1);
-  }
-  .gen-result .gen-row:last-child { border-bottom: none; }
-  .gen-result .gen-row .lbl { color: var(--text-dim); font-size: 0.7rem; }
 
   /* TOAST */
   #toast {
@@ -645,7 +633,7 @@
 
               <!-- Add User -->
               <div class="admin-form">
-                <h3>➕ Add User</h3>
+                <h3>➕ Add User & Random Generator</h3>
                 <div class="row">
                   <div>
                     <label>Username</label>
@@ -656,22 +644,27 @@
                     <input id="addPassword" type="text" placeholder="pass1234" />
                   </div>
                 </div>
-                <div class="row single">
+                <div class="row">
                   <div>
-                    <label>Validity (days — খালি রাখলে unlimited)</label>
-                    <input id="addValidity" type="number" min="0" placeholder="যেমন: 30" />
+                    <label>Validity (days — খালি=unlimited)</label>
+                    <input id="addValidity" type="number" min="0" placeholder="30" />
+                  </div>
+                  <div>
+                    <label>Random Gen Quantity</label>
+                    <input id="randomCount" type="number" min="1" max="100" placeholder="1" value="1" />
                   </div>
                 </div>
                 <div class="action-row">
-                  <button class="btn primary" id="addUserBtn"><span>➕</span><span>Add User</span></button>
+                  <button class="btn primary" id="addUserBtn"><span>➕</span><span>Add Manual</span></button>
                   <button class="btn ghost" id="randomBtn"><span>🎲</span><span>Random Gen</span></button>
                 </div>
                 <div class="gen-result" id="genResult">
-                  <div class="gen-label">🎲 Generated Credentials</div>
-                  <div class="gen-row"><span class="lbl">Username</span><span id="genUser">—</span></div>
-                  <div class="gen-row"><span class="lbl">Password</span><span id="genPass">—</span></div>
-                  <div class="gen-row"><span class="lbl">Validity</span><span id="genValid">—</span></div>
-                  <button class="btn ghost small" id="copyGenBtn" style="margin-top:8px;"><span>📋</span><span>Copy Credentials</span></button>
+                  <div class="gen-label">🎲 Generated Credentials (<span id="genCount">0</span>)</div>
+                  <div id="genList" style="max-height:280px; overflow-y:auto; margin-top:6px;"></div>
+                  <div class="action-row" style="margin-top:10px;">
+                    <button class="btn ghost small" id="copyGenBtn"><span>📋</span><span>Copy All</span></button>
+                    <button class="btn ghost small" id="downloadGenBtn"><span>📥</span><span>Download TXT</span></button>
+                  </div>
                 </div>
               </div>
 
@@ -997,6 +990,8 @@ function dl(text, name) {
 // ============================================================
 //  ADMIN PANEL
 // ============================================================
+let lastGenerated = [];
+
 async function loadUsers() {
   const list = document.getElementById('userList');
   list.innerHTML = '<div class="empty"><span class="emo">⏳</span><div class="title">Loading...</div></div>';
@@ -1042,7 +1037,6 @@ async function loadUsers() {
         </div>`;
     }).join('');
 
-    // Delete buttons
     list.querySelectorAll('.del-btn').forEach(b => {
       b.addEventListener('click', async () => {
         if (!confirm('Delete user: ' + b.dataset.u + '?')) return;
@@ -1057,7 +1051,6 @@ async function loadUsers() {
       });
     });
 
-    // Validity buttons
     list.querySelectorAll('.validity-btn').forEach(b => {
       b.addEventListener('click', async () => {
         const days = prompt(`Set validity for ${b.dataset.u} (days, 0 = unlimited):`, '30');
@@ -1077,7 +1070,7 @@ async function loadUsers() {
   }
 }
 
-// Add user
+// Add user (manual)
 document.getElementById('addUserBtn').addEventListener('click', async () => {
   const username = document.getElementById('addUsername').value.trim();
   const password = document.getElementById('addPassword').value;
@@ -1099,31 +1092,80 @@ document.getElementById('addUserBtn').addEventListener('click', async () => {
   }
 });
 
-// Random generate
+// Random Gen (multiple)
 document.getElementById('randomBtn').addEventListener('click', async () => {
   const validityDays = document.getElementById('addValidity').value;
-  const r = await fetch('/api/admin?action=random', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeader() },
-    body: JSON.stringify({ validityDays })
-  });
-  const d = await r.json();
-  if (!d.ok) return showToast('❌ ' + (d.message || 'Failed'));
+  const count = document.getElementById('randomCount').value || 1;
 
-  document.getElementById('genUser').textContent = d.username;
-  document.getElementById('genPass').textContent = d.password;
-  document.getElementById('genValid').textContent = d.validityDays ? d.validityDays + ' days' : 'Unlimited';
-  document.getElementById('genResult').classList.add('show');
-  document.getElementById('genResult').dataset.user = d.username;
-  document.getElementById('genResult').dataset.pass = d.password;
-  showToast('🎲 Generated!');
-  loadUsers();
+  const btn = document.getElementById('randomBtn');
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>Generating...</span>';
+
+  try {
+    const r = await fetch('/api/admin?action=random', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeader() },
+      body: JSON.stringify({ validityDays, count })
+    });
+    const d = await r.json();
+    if (!d.ok) {
+      showToast('❌ ' + (d.message || 'Failed'));
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+      return;
+    }
+
+    lastGenerated = d.users;
+    renderGenerated(d.users, d.validityDays);
+    showToast('🎲 Generated ' + d.count + ' user(s)');
+    loadUsers();
+  } catch (e) {
+    showToast('❌ ' + e.message);
+  }
+  btn.disabled = false;
+  btn.innerHTML = originalHTML;
 });
 
+function renderGenerated(users, validityDays) {
+  const box = document.getElementById('genResult');
+  const list = document.getElementById('genList');
+  document.getElementById('genCount').textContent = users.length;
+
+  const validityText = validityDays && Number(validityDays) > 0 ? validityDays + ' days' : 'Unlimited';
+
+  list.innerHTML = users.map((u, i) => `
+    <div class="gen-row" style="display:flex; justify-content:space-between; gap:8px; align-items:center; padding:6px 0; border-bottom:1px solid rgba(56,189,248,0.08);">
+      <span style="color:#cbd5e1; font-size:0.72rem;">${i + 1}.</span>
+      <span style="flex:1; font-family:'SF Mono',Consolas,monospace; font-size:0.78rem; color:#f1f5f9; word-break:break-all;">${u.username}:${u.password}</span>
+      <button class="btn ghost small copy-one" data-creds="${u.username}:${u.password}" style="padding:3px 8px; font-size:0.62rem; min-width:auto; flex-shrink:0;">📋</button>
+    </div>
+  `).join('') + `
+    <div style="margin-top:8px; padding:6px 0; font-size:0.68rem; color:#94a3b8; text-align:right;">
+      ⏰ Validity: <b style="color:#facc15;">${validityText}</b>
+    </div>
+  `;
+
+  box.classList.add('show');
+
+  list.querySelectorAll('.copy-one').forEach(b => {
+    b.addEventListener('click', () => {
+      navigator.clipboard.writeText(b.dataset.creds).then(() => showToast('📋 Copied: ' + b.dataset.creds));
+    });
+  });
+}
+
 document.getElementById('copyGenBtn').addEventListener('click', () => {
-  const g = document.getElementById('genResult');
-  const text = `Username: ${g.dataset.user}\nPassword: ${g.dataset.pass}`;
-  navigator.clipboard.writeText(text).then(() => showToast('📋 Copied!'));
+  if (!lastGenerated.length) return showToast('❌ Nothing to copy');
+  const text = lastGenerated.map(u => `${u.username}:${u.password}`).join('\n');
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Copied ' + lastGenerated.length + ' credentials'));
+});
+
+document.getElementById('downloadGenBtn').addEventListener('click', () => {
+  if (!lastGenerated.length) return showToast('❌ Nothing to download');
+  const text = lastGenerated.map(u => `${u.username}:${u.password}`).join('\n');
+  dl(text, `expressvpn_accounts_${Date.now()}.txt`);
+  showToast('📥 Downloaded ' + lastGenerated.length + ' accounts');
 });
 
 // ============================================================
