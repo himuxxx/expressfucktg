@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0a0f1e" />
 <title>ExpressVPN Checker | By @SHAKIB2016</title>
 <style>
@@ -26,10 +26,8 @@
     --success: #22c55e;
     --danger: #ef4444;
     --warning: #facc15;
-    --radius-lg: 20px;
-    --radius-md: 14px;
-    --radius-sm: 10px;
   }
+
   html, body {
     background: var(--bg-1);
     background-image:
@@ -39,11 +37,15 @@
       linear-gradient(160deg, #050816 0%, #0a0f1e 55%, #0f1830 100%);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     color: var(--text);
-    min-height: 100vh;
     height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -61,6 +63,7 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    min-height: 100dvh;
     padding: 20px;
     position: relative;
     overflow: hidden;
@@ -76,8 +79,8 @@
     z-index: 0;
   }
   @keyframes pulse-bg {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.15); }
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
   }
 
   .login-shell {
@@ -100,14 +103,7 @@
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    box-shadow:
-      0 12px 32px rgba(59, 130, 246, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    animation: float 4s ease-in-out infinite;
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
   }
   .login-brand h1 {
     font-size: 1.6rem;
@@ -128,9 +124,7 @@
     border: 1px solid var(--border-2);
     border-radius: 24px;
     padding: 28px 24px;
-    box-shadow:
-      0 24px 48px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
   }
   .login-card h2 {
     font-size: 1.05rem;
@@ -197,22 +191,8 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    position: relative;
-    overflow: hidden;
   }
-  .btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-    transition: 0.5s;
-  }
-  .btn-primary:hover::before { left: 100%; }
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.45);
-  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .login-hint {
@@ -232,21 +212,23 @@
   #appPage {
     display: none;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
 
   .app-layout {
     display: flex;
     height: 100vh;
+    height: 100dvh;
     flex-direction: column;
   }
 
-  /* ===== Top Header ===== */
   .topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 10px 14px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
     background: rgba(10, 15, 30, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -265,6 +247,7 @@
     justify-content: center;
     font-size: 1.1rem;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    flex-shrink: 0;
   }
   .topbar .brand .title { display: flex; flex-direction: column; }
   .topbar .brand .title h1 {
@@ -284,14 +267,14 @@
   }
   .topbar .brand .title small a { color: #38bdf8; text-decoration: none; }
 
-  .topbar .user-zone { display: flex; align-items: center; gap: 10px; }
+  .topbar .user-zone { display: flex; align-items: center; gap: 8px; }
   .user-chip {
     display: flex;
     align-items: center;
     gap: 8px;
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid var(--border);
-    padding: 6px 12px 6px 6px;
+    padding: 5px 10px 5px 5px;
     border-radius: 30px;
     font-size: 0.76rem;
     color: #cbd5e1;
@@ -307,6 +290,7 @@
     font-size: 0.72rem;
     font-weight: 800;
     color: white;
+    flex-shrink: 0;
   }
   .user-chip b { color: #e2e8f0; font-weight: 700; }
 
@@ -323,6 +307,7 @@
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.9rem;
+    flex-shrink: 0;
   }
   .icon-btn:hover {
     background: rgba(56, 189, 248, 0.12);
@@ -334,7 +319,7 @@
      APP BODY
   ============================================================ */
   .app-body {
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -344,12 +329,12 @@
   .sidebar { display: none; }
 
   .main-content {
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    padding: 12px;
-    gap: 12px;
+    padding: 10px;
+    gap: 10px;
     overflow: hidden;
   }
 
@@ -360,7 +345,8 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border);
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    padding: 6px 4px;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
     flex-shrink: 0;
     z-index: 40;
   }
@@ -380,6 +366,7 @@
     cursor: pointer;
     transition: all 0.25s;
     position: relative;
+    font-family: inherit;
   }
   .bottom-nav .nav-item .ni {
     font-size: 1.15rem;
@@ -389,7 +376,6 @@
   .bottom-nav .nav-item.active { color: #38bdf8; }
   .bottom-nav .nav-item.active .ni {
     transform: translateY(-1px) scale(1.1);
-    filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.6));
   }
   .bottom-nav .nav-item.active::before {
     content: '';
@@ -419,19 +405,19 @@
     align-items: center;
     justify-content: center;
     border: 2px solid #0a0f1e;
-    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5);
     line-height: 1;
   }
 
   /* ============================================================
-     PANELS — FIXED LAYOUT
+     PANELS
   ============================================================ */
   .panel-wrap {
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
   }
 
   .panel {
@@ -441,25 +427,27 @@
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border);
-    border-radius: 20px;
+    border-radius: 18px;
     overflow: hidden;
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
     width: 100%;
-    animation: panelIn 0.3s ease;
+    height: 100%;
+    animation: panelFade 0.25s ease;
   }
-  @keyframes panelIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: none; }
+  @keyframes panelFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
   .panel.active { display: flex; }
 
   .panel-scroll {
-    flex: 1;
+    flex: 1 1 0%;
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 16px;
+    padding: 14px;
+    overscroll-behavior: contain;
   }
 
   /* ============================================================
@@ -483,15 +471,15 @@
     box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
   }
 
-  .combo-field { margin-bottom: 14px; }
+  .combo-field { margin-bottom: 12px; }
   textarea {
     width: 100%;
-    min-height: 150px;
-    max-height: 320px;
+    min-height: 130px;
+    max-height: 260px;
     background: rgba(2, 6, 23, 0.6);
     border: 1px solid #334155;
     border-radius: 14px;
-    padding: 14px;
+    padding: 12px;
     color: #e2e8f0;
     font-family: 'SF Mono', 'JetBrains Mono', Consolas, monospace;
     font-size: 0.8rem;
@@ -507,20 +495,20 @@
   }
   textarea::placeholder { color: #475569; }
 
-  .upload-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .upload-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
   .upload-btn {
     flex: 1;
-    min-width: 130px;
+    min-width: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 11px 14px;
+    gap: 6px;
+    padding: 10px 12px;
     background: rgba(15, 23, 42, 0.7);
     border: 1.5px dashed #475569;
     border-radius: 12px;
     color: #cbd5e1;
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -530,7 +518,6 @@
     background: rgba(56, 189, 248, 0.08);
     border-color: #38bdf8;
     color: #38bdf8;
-    transform: translateY(-1px);
   }
   .upload-btn input { display: none; }
   .upload-btn.danger:hover {
@@ -544,37 +531,32 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
-  .action-row.duo { grid-template-columns: 1fr 1fr; }
 
   .btn {
-    padding: 13px 16px;
+    padding: 12px 14px;
     border: none;
     border-radius: 13px;
     color: white;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 6px;
     transition: all 0.25s;
     font-family: inherit;
-    position: relative;
-    overflow: hidden;
   }
-  .btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .btn.start {
     background: linear-gradient(135deg, #22c55e, #16a34a);
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
   }
-  .btn.start:hover:not(:disabled) { box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45); }
   .btn.stop {
     background: linear-gradient(135deg, #ef4444, #b91c1c);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
   }
-  .btn.stop:hover:not(:disabled) { box-shadow: 0 10px 28px rgba(239, 68, 68, 0.45); }
   .btn.export {
     background: rgba(15, 23, 42, 0.85);
     border: 1px solid #334155;
@@ -591,20 +573,19 @@
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 16px;
+    gap: 8px;
+    margin-top: 14px;
   }
   .stat-card {
     background: rgba(2, 6, 23, 0.55);
     border: 1px solid #1e293b;
-    border-radius: 14px;
-    padding: 12px;
+    border-radius: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     position: relative;
     overflow: hidden;
-    transition: all 0.25s;
   }
   .stat-card::before {
     content: '';
@@ -620,19 +601,19 @@
   .stat-card .ico-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.68rem;
+    gap: 5px;
+    font-size: 0.62rem;
     color: #94a3b8;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
   }
   .stat-card .value {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: #e2e8f0;
     line-height: 1;
-    margin-top: 4px;
+    margin-top: 3px;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.5px;
   }
@@ -641,81 +622,68 @@
 
   /* ===== Progress ===== */
   .progress-wrap {
-    margin-top: 16px;
+    margin-top: 14px;
     background: rgba(2, 6, 23, 0.5);
     border: 1px solid #1e293b;
-    border-radius: 14px;
-    padding: 12px 14px;
+    border-radius: 12px;
+    padding: 10px 12px;
   }
   .progress-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: #94a3b8;
-    margin-bottom: 8px;
+    margin-bottom: 7px;
     font-weight: 600;
   }
   .progress-head b { color: #38bdf8; }
   .progress-bar {
-    height: 8px;
+    height: 7px;
     background: rgba(30, 41, 59, 0.8);
     border-radius: 30px;
     overflow: hidden;
-    position: relative;
   }
   .progress-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #38bdf8, #8b5cf6, #38bdf8);
-    background-size: 200% 100%;
+    background: linear-gradient(90deg, #38bdf8, #8b5cf6);
     border-radius: 30px;
     transition: width 0.4s ease;
-    animation: progress-shine 2s linear infinite;
-  }
-  @keyframes progress-shine {
-    from { background-position: 0% 50%; }
-    to { background-position: 200% 50%; }
   }
   .status-text {
-    margin-top: 10px;
-    font-size: 0.74rem;
+    margin-top: 8px;
+    font-size: 0.72rem;
     color: var(--text-dim);
     display: flex;
     align-items: center;
     gap: 6px;
-    min-height: 16px;
+    min-height: 15px;
   }
   .status-text .pulse-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: #22c55e;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
     animation: pulse-dot 1.5s ease-in-out infinite;
     flex-shrink: 0;
   }
   @keyframes pulse-dot {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.3); opacity: 0.6; }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
   }
 
   /* ============================================================
      HIT CARDS
   ============================================================ */
-  .hits-list { display: flex; flex-direction: column; gap: 12px; }
+  .hits-list { display: flex; flex-direction: column; gap: 10px; }
   .hit-card {
-    background: linear-gradient(135deg, rgba(15, 42, 31, 0.65), rgba(2, 6, 23, 0.75));
-    border: 1px solid rgba(74, 222, 128, 0.3);
-    border-radius: 16px;
-    padding: 14px;
+    background: linear-gradient(135deg, rgba(15, 42, 31, 0.7), rgba(2, 6, 23, 0.8));
+    border: 1px solid rgba(74, 222, 128, 0.35);
+    border-radius: 14px;
+    padding: 12px;
     position: relative;
     overflow: hidden;
-    animation: hitIn 0.4s ease;
-  }
-  @keyframes hitIn {
-    from { opacity: 0; transform: translateY(12px) scale(0.97); }
-    to { opacity: 1; transform: none; }
   }
   .hit-card::before {
     content: '';
@@ -726,45 +694,32 @@
     height: 100%;
     background: linear-gradient(180deg, #22c55e, #16a34a);
   }
-  .hit-card::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(34, 197, 94, 0.1), transparent 60%);
-    pointer-events: none;
-  }
   .hit-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 12px;
-    position: relative;
-    z-index: 1;
+    margin-bottom: 10px;
   }
   .hit-badge {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: white;
-    font-size: 0.66rem;
+    font-size: 0.62rem;
     font-weight: 800;
-    padding: 5px 11px;
+    padding: 4px 9px;
     border-radius: 20px;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+    letter-spacing: 0.4px;
   }
   .copy-btn {
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.85);
     border: 1px solid #334155;
     color: #cbd5e1;
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 20px;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -778,31 +733,31 @@
     border-color: var(--border-2);
     color: #38bdf8;
   }
-  .hit-fields { display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; }
+  .hit-fields { display: flex; flex-direction: column; gap: 7px; }
   .hit-field {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    font-size: 0.76rem;
+    gap: 8px;
+    font-size: 0.74rem;
     line-height: 1.4;
   }
   .hit-field .fico {
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
-    border-radius: 7px;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
     background: rgba(30, 41, 59, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
   .hit-field .fk {
     color: var(--text-dim);
-    font-size: 0.7rem;
-    min-width: 68px;
+    font-size: 0.64rem;
+    min-width: 60px;
     flex-shrink: 0;
-    padding-top: 2px;
+    padding-top: 3px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -812,13 +767,14 @@
     font-weight: 600;
     word-break: break-all;
     flex: 1;
+    min-width: 0;
   }
   .hit-field .fv.mono {
     font-family: 'SF Mono', Consolas, monospace;
-    background: rgba(2, 6, 23, 0.7);
-    padding: 2px 8px;
+    background: rgba(2, 6, 23, 0.75);
+    padding: 2px 7px;
     border-radius: 6px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     border: 1px solid rgba(56, 189, 248, 0.12);
   }
   .hit-field .fv.accent { color: #4ade80; }
@@ -826,22 +782,20 @@
   /* ============================================================
      MINI LIST (All tab)
   ============================================================ */
-  .mini-list { display: flex; flex-direction: column; gap: 6px; }
+  .mini-list { display: flex; flex-direction: column; gap: 5px; }
   .mini-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px;
+    padding: 9px 11px;
     border-radius: 10px;
     background: rgba(2, 6, 23, 0.5);
     border: 1px solid #1e293b;
     border-left: 3px solid #334155;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     word-break: break-all;
-    transition: all 0.2s;
   }
-  .mini-item:hover { background: rgba(2, 6, 23, 0.8); }
   .mini-item.hit { border-left-color: #4ade80; }
   .mini-item.fail { border-left-color: #f87171; }
   .mini-item .combo-text {
@@ -855,7 +809,7 @@
   }
   .mini-item .status-tag {
     font-weight: 800;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     padding: 3px 9px;
     border-radius: 20px;
     flex-shrink: 0;
@@ -877,23 +831,18 @@
   ============================================================ */
   .empty {
     text-align: center;
-    padding: 60px 20px;
+    padding: 50px 20px;
     color: var(--text-dimmer);
     font-size: 0.86rem;
   }
   .empty .emo {
-    font-size: 3rem;
+    font-size: 2.8rem;
     display: block;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     opacity: 0.5;
-    animation: emptyFloat 3s ease-in-out infinite;
   }
-  @keyframes emptyFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-  .empty .title { font-size: 1rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px; }
-  .empty .sub { font-size: 0.78rem; color: #64748b; }
+  .empty .title { font-size: 0.95rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px; }
+  .empty .sub { font-size: 0.76rem; color: #64748b; }
 
   /* ============================================================
      TOAST
@@ -907,9 +856,9 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     color: white;
-    padding: 11px 20px;
+    padding: 10px 18px;
     border-radius: 30px;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
     border: 1px solid var(--border-2);
     opacity: 0;
@@ -1117,16 +1066,16 @@
     .main-content { padding: 10px; gap: 10px; }
     .panel-scroll { padding: 12px; }
 
-    textarea { min-height: 120px; font-size: 0.78rem; }
+    textarea { min-height: 110px; font-size: 0.78rem; }
     .hit-card { padding: 12px; }
-    .hit-field .fk { min-width: 60px; font-size: 0.66rem; }
+    .hit-field .fk { min-width: 56px; font-size: 0.62rem; }
     .hit-field { font-size: 0.72rem; }
     .stat-card .value { font-size: 1.35rem; }
-    .stat-card { padding: 10px; }
-    .stat-card .ico-row { font-size: 0.62rem; }
+    .stat-card { padding: 9px; }
+    .stat-card .ico-row { font-size: 0.6rem; }
 
-    .upload-btn { min-width: 120px; padding: 10px; font-size: 0.74rem; }
-    .btn { padding: 12px 14px; font-size: 0.82rem; }
+    .upload-btn { min-width: 100px; padding: 9px; font-size: 0.72rem; }
+    .btn { padding: 11px 12px; font-size: 0.8rem; }
   }
 </style>
 </head>
@@ -1181,7 +1130,7 @@
 <div id="appPage">
   <div class="app-layout">
 
-    <!-- ===== Sidebar (desktop only) ===== -->
+    <!-- Sidebar (desktop) -->
     <aside class="sidebar">
       <div class="side-brand">
         <div class="logo-mark">🔒</div>
@@ -1219,9 +1168,8 @@
       </div>
     </aside>
 
-    <!-- ===== Right side ===== -->
-    <div class="app-body" style="flex:1;">
-      <!-- Topbar -->
+    <!-- Main -->
+    <div class="app-body">
       <div class="topbar">
         <div class="brand">
           <div class="logo-mark">🔒</div>
@@ -1239,11 +1187,10 @@
         </div>
       </div>
 
-      <!-- Main content -->
       <div class="main-content">
         <div class="panel-wrap">
 
-          <!-- ===== Combo Panel ===== -->
+          <!-- Combo Panel -->
           <section class="panel active" id="panel-combo">
             <div class="panel-scroll">
               <div class="section-title">
@@ -1252,7 +1199,7 @@
               </div>
 
               <div class="combo-field">
-                <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456&#10;third@mail.com:pass789"></textarea>
+                <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456"></textarea>
               </div>
 
               <div class="upload-row">
@@ -1267,10 +1214,10 @@
                 </button>
               </div>
 
-              <div class="action-row duo">
+              <div class="action-row">
                 <button id="startBtn" class="btn start">
                   <span>▶</span>
-                  <span>Start Checking</span>
+                  <span>Start</span>
                 </button>
                 <button id="stopBtn" class="btn stop" disabled>
                   <span>⏹</span>
@@ -1278,7 +1225,7 @@
                 </button>
               </div>
 
-              <div class="action-row duo" style="margin-top:10px;">
+              <div class="action-row" style="margin-top:8px;">
                 <button id="exportHits" class="btn export">
                   <span>📥</span>
                   <span>Export Hits</span>
@@ -1324,7 +1271,7 @@
             </div>
           </section>
 
-          <!-- ===== Stats Panel ===== -->
+          <!-- Stats Panel -->
           <section class="panel" id="panel-stats">
             <div class="panel-scroll">
               <div class="section-title">
@@ -1367,7 +1314,7 @@
             </div>
           </section>
 
-          <!-- ===== Hits Panel ===== -->
+          <!-- Hits Panel -->
           <section class="panel" id="panel-hits">
             <div class="panel-scroll">
               <div class="section-title">
@@ -1384,7 +1331,7 @@
             </div>
           </section>
 
-          <!-- ===== All Panel ===== -->
+          <!-- All Panel -->
           <section class="panel" id="panel-all">
             <div class="panel-scroll">
               <div class="section-title">
@@ -1404,7 +1351,7 @@
         </div>
       </div>
 
-      <!-- Bottom nav (mobile only) -->
+      <!-- Bottom nav (mobile) -->
       <nav class="bottom-nav">
         <button class="nav-item active" data-tab="combo">
           <span class="ni">📝</span>
@@ -1531,6 +1478,9 @@ function switchTab(tabName) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   const panel = document.getElementById('panel-' + tabName);
   if (panel) panel.classList.add('active');
+  // Reset scroll on target panel
+  const scrollEl = panel?.querySelector('.panel-scroll');
+  if (scrollEl) scrollEl.scrollTop = 0;
 }
 
 document.querySelectorAll('.nav-item, .side-nav-item').forEach(tab => {
@@ -1626,8 +1576,8 @@ function setStatus(m, isActive = false) {
   const dotHtml = isActive
     ? '<span class="pulse-dot"></span>'
     : '<span style="width:7px;height:7px;border-radius:50%;background:#64748b;flex-shrink:0;"></span>';
-  statusEl.innerHTML = dotHtml + '<span>' + m + '</span>';
-  statusEl2.innerHTML = dotHtml + '<span>' + m + '</span>';
+  if (statusEl) statusEl.innerHTML = dotHtml + '<span>' + m + '</span>';
+  if (statusEl2) statusEl2.innerHTML = dotHtml + '<span>' + m + '</span>';
 }
 
 function escapeHtml(s) {
