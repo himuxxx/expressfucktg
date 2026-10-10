@@ -1,14 +1,10 @@
 {
   "functions": {
-    "api/check.js": {
-      "maxDuration": 60
-    },
-    "api/telegram.js": {
-      "maxDuration": 60
-    },
-    "api/auth.js": {
-      "maxDuration": 60
-    }
+    "api/check.js": { "maxDuration": 60 },
+    "api/telegram.js": { "maxDuration": 60 },
+    "api/auth.js": { "maxDuration": 60 },
+    "api/admin.js": { "maxDuration": 60 },
+    "api/analytics.js": { "maxDuration": 60 }
   },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
