@@ -46,7 +46,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); border-radius: 10px; }
   ::-webkit-scrollbar-thumb {
@@ -90,9 +89,7 @@
     flex-direction: column;
     gap: 24px;
   }
-  .login-brand {
-    text-align: center;
-  }
+  .login-brand { text-align: center; }
   .login-brand .logo-mark {
     width: 76px;
     height: 76px;
@@ -121,11 +118,7 @@
     font-weight: 800;
     letter-spacing: -0.5px;
   }
-  .login-brand p {
-    margin-top: 6px;
-    font-size: 0.82rem;
-    color: var(--text-dim);
-  }
+  .login-brand p { margin-top: 6px; font-size: 0.82rem; color: var(--text-dim); }
   .login-brand p a { color: #38bdf8; text-decoration: none; font-weight: 600; }
 
   .login-card {
@@ -159,9 +152,7 @@
     letter-spacing: 0.4px;
     text-transform: uppercase;
   }
-  .field .input-wrap {
-    position: relative;
-  }
+  .field .input-wrap { position: relative; }
   .field .input-wrap .icon {
     position: absolute;
     left: 14px;
@@ -222,10 +213,7 @@
     transform: translateY(-2px);
     box-shadow: 0 12px 32px rgba(59, 130, 246, 0.45);
   }
-  .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .login-hint {
     text-align: center;
@@ -253,7 +241,7 @@
     flex-direction: column;
   }
 
-  /* ===== Top Header (both mobile & PC) ===== */
+  /* ===== Top Header ===== */
   .topbar {
     display: flex;
     align-items: center;
@@ -266,11 +254,7 @@
     flex-shrink: 0;
     z-index: 50;
   }
-  .topbar .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .topbar .brand { display: flex; align-items: center; gap: 10px; }
   .topbar .brand .logo-mark {
     width: 36px;
     height: 36px;
@@ -282,10 +266,7 @@
     font-size: 1.1rem;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
   }
-  .topbar .brand .title {
-    display: flex;
-    flex-direction: column;
-  }
+  .topbar .brand .title { display: flex; flex-direction: column; }
   .topbar .brand .title h1 {
     font-size: 0.95rem;
     font-weight: 800;
@@ -303,11 +284,7 @@
   }
   .topbar .brand .title small a { color: #38bdf8; text-decoration: none; }
 
-  .topbar .user-zone {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .topbar .user-zone { display: flex; align-items: center; gap: 10px; }
   .user-chip {
     display: flex;
     align-items: center;
@@ -354,7 +331,7 @@
   }
 
   /* ============================================================
-     MOBILE-FIRST BODY
+     APP BODY
   ============================================================ */
   .app-body {
     flex: 1;
@@ -364,12 +341,8 @@
     overflow: hidden;
   }
 
-  /* ===== Sidebar (desktop) – hidden on mobile ===== */
-  .sidebar {
-    display: none;
-  }
+  .sidebar { display: none; }
 
-  /* ===== Main content ===== */
   .main-content {
     flex: 1;
     min-height: 0;
@@ -413,9 +386,7 @@
     line-height: 1;
     transition: transform 0.25s;
   }
-  .bottom-nav .nav-item.active {
-    color: #38bdf8;
-  }
+  .bottom-nav .nav-item.active { color: #38bdf8; }
   .bottom-nav .nav-item.active .ni {
     transform: translateY(-1px) scale(1.1);
     filter: drop-shadow(0 4px 12px rgba(56, 189, 248, 0.6));
@@ -452,15 +423,18 @@
     line-height: 1;
   }
 
-  /* ===== Panels ===== */
+  /* ============================================================
+     PANELS — FIXED LAYOUT
+  ============================================================ */
   .panel-wrap {
     flex: 1;
     min-height: 0;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
+
   .panel {
-    position: absolute;
-    inset: 0;
     display: none;
     flex-direction: column;
     background: rgba(18, 25, 45, 0.55);
@@ -469,10 +443,13 @@
     border: 1px solid var(--border);
     border-radius: 20px;
     overflow: hidden;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
     animation: panelIn 0.3s ease;
   }
   @keyframes panelIn {
-    from { opacity: 0; transform: translateY(8px) scale(0.99); }
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: none; }
   }
   .panel.active { display: flex; }
@@ -481,6 +458,7 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: 16px;
   }
 
@@ -529,12 +507,7 @@
   }
   textarea::placeholder { color: #475569; }
 
-  .upload-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
-  }
+  .upload-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
   .upload-btn {
     flex: 1;
     min-width: 130px;
@@ -571,7 +544,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
-  .action-row.single { grid-template-columns: 1fr; }
+  .action-row.duo { grid-template-columns: 1fr 1fr; }
 
   .btn {
     padding: 13px 16px;
@@ -590,27 +563,18 @@
     position: relative;
     overflow: hidden;
   }
-  .btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-  }
-  .btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .btn.start {
     background: linear-gradient(135deg, #22c55e, #16a34a);
     box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
   }
-  .btn.start:hover:not(:disabled) {
-    box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45);
-  }
+  .btn.start:hover:not(:disabled) { box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45); }
   .btn.stop {
     background: linear-gradient(135deg, #ef4444, #b91c1c);
     box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
   }
-  .btn.stop:hover:not(:disabled) {
-    box-shadow: 0 10px 28px rgba(239, 68, 68, 0.45);
-  }
+  .btn.stop:hover:not(:disabled) { box-shadow: 0 10px 28px rgba(239, 68, 68, 0.45); }
   .btn.export {
     background: rgba(15, 23, 42, 0.85);
     border: 1px solid #334155;
@@ -928,12 +892,7 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
   }
-  .empty .title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #94a3b8;
-    margin-bottom: 4px;
-  }
+  .empty .title { font-size: 1rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px; }
   .empty .sub { font-size: 0.78rem; color: #64748b; }
 
   /* ============================================================
@@ -961,20 +920,14 @@
     max-width: 90%;
     text-align: center;
   }
-  #toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
   /* ============================================================
-     DESKTOP ADJUSTMENTS (PC)
+     DESKTOP
   ============================================================ */
   @media (min-width: 768px) {
-    .app-layout {
-      flex-direction: row;
-    }
+    .app-layout { flex-direction: row; }
 
-    /* Sidebar on desktop */
     .sidebar {
       display: flex;
       flex-direction: column;
@@ -1101,10 +1054,7 @@
       color: white;
       flex-shrink: 0;
     }
-    .side-user .info {
-      flex: 1;
-      min-width: 0;
-    }
+    .side-user .info { flex: 1; min-width: 0; }
     .side-user .info b { color: #e2e8f0; display: block; overflow: hidden; text-overflow: ellipsis; }
     .side-user .info small { color: var(--text-dimmer); font-size: 0.68rem; }
     .side-user .logout-mini {
@@ -1118,69 +1068,41 @@
     }
     .side-user .logout-mini:hover { color: #ef4444; }
 
-    /* Hide mobile bottom nav on desktop */
     .bottom-nav { display: none; }
 
-    /* Main content */
     .main-content {
       padding: 20px 24px;
       gap: 16px;
-      max-width: 100%;
     }
 
-    /* Desktop panel */
-    .panel { border-radius: 20px; }
     .panel-scroll { padding: 24px; }
+    textarea { min-height: 200px; font-size: 0.84rem; }
 
-    /* Bigger textarea on desktop */
-    textarea {
-      min-height: 200px;
-      font-size: 0.84rem;
-    }
-
-    /* 4-column stats on desktop */
     .stats-grid {
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
     .stat-card .value { font-size: 1.9rem; }
 
-    /* Better hit cards on desktop – 2 columns */
     .hits-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 14px;
     }
-
-    /* Wider hit cards */
     .hit-card { padding: 16px; }
     .hit-field { font-size: 0.8rem; }
     .hit-field .fk { min-width: 76px; }
 
-    /* Bigger buttons row on desktop */
-    .action-row {
-      grid-template-columns: repeat(4, 1fr);
-    }
-    .action-row.duo { grid-template-columns: 1fr 1fr; }
-
-    /* Toast position */
     #toast { bottom: 30px; }
   }
 
-  /* ============================================================
-     EXTRA LARGE SCREENS
-  ============================================================ */
   @media (min-width: 1400px) {
-    .main-content {
-      padding: 24px 32px;
-    }
-    .hits-list {
-      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    }
+    .main-content { padding: 24px 32px; }
+    .hits-list { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
   }
 
   /* ============================================================
-     MOBILE ONLY (below 768)
+     MOBILE ONLY
   ============================================================ */
   @media (max-width: 767px) {
     .sidebar { display: none; }
@@ -1299,7 +1221,7 @@
 
     <!-- ===== Right side ===== -->
     <div class="app-body" style="flex:1;">
-      <!-- Topbar (mobile + desktop) -->
+      <!-- Topbar -->
       <div class="topbar">
         <div class="brand">
           <div class="logo-mark">🔒</div>
@@ -1367,7 +1289,6 @@
                 </button>
               </div>
 
-              <!-- Stats grid (always visible in combo panel) -->
               <div class="stats-grid">
                 <div class="stat-card">
                   <div class="ico-row">📊 Total</div>
@@ -1601,7 +1522,7 @@ document.getElementById('logoutBtn').addEventListener('click', doLogout);
 document.getElementById('logoutBtnPc').addEventListener('click', doLogout);
 
 // ============================================================
-//  TABS (both bottom nav + sidebar)
+//  TABS
 // ============================================================
 function switchTab(tabName) {
   document.querySelectorAll('.nav-item, .side-nav-item').forEach(t => {
