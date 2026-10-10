@@ -1,8 +1,16 @@
-// api/check.js – লগইন ছাড়াই (আগের মতো)
+// api/check.js
 import { checkExpressVPN } from '../lib/expressChecker.js';
+import { validateSession } from '../lib/auth.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const auth = req.headers['authorization'] || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+  const session = await validateSession(token);
+  if (!session) {
+    return res.status(401).json({ error: '🔒 Please login or your access expired' });
+  }
 
   const { username, password, combos } = req.body;
 
